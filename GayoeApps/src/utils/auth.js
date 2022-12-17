@@ -10,32 +10,37 @@ const config = token => {
   };
 };
 
+// Register
 export const register = body => {
-  const URL = `${BaseUrl}api/auths/register`;
+  const URL = `${BaseUrl}api/v1/users`;
   // console.log('util', URL);
   return axios.post(URL, body);
 };
 
+// Login
 export const login = body => {
-  const URL = `${BaseUrl}api/auths/login`;
+  const URL = `${BaseUrl}api/v1/auth`;
   // console.log('util', body);
   return axios.post(URL, body);
 };
 
-export const forgot = body => {
-  const URL = `${BaseUrl}api/auths/forgot-password`;
-  // console.log('util', body);
-  return axios.patch(URL, body);
-};
+// Forgot
+// export const forgot = body => {
+//   const URL = `${BaseUrl}api/auths/forgot-password`;
+//   // console.log('util', body);
+//   return axios.patch(URL, body);
+// };
 
-export const reset = body => {
-  const URL = `${BaseUrl}api/auths/reset-password`;
-  // console.log('util', body);
-  return axios.patch(URL, body);
-};
+// Reset
+// export const reset = body => {
+//   const URL = `${BaseUrl}api/auths/reset-password`;
+//   // console.log('util', body);
+//   return axios.patch(URL, body);
+// };
 
-export const logout = token => {
-  const URL = `${BaseUrl}api/auths/logout`;
-  // console.log('util', body);
-  return axios.delete(URL, config(token));
-};
+// Logout
+// export const logout = token => {
+//   const URL = `${BaseUrl}api/auths/logout`;
+//   // console.log('util', body);
+//   return axios.delete(URL, config(token));
+// };

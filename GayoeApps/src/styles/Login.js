@@ -104,6 +104,24 @@ const style = StyleSheet.create({
     flex: 1,
     paddingBottom: 10,
   },
+  inputs: {
+    flex: 1,
+    fontFamily: 'Poppins-Bold',
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#fff',
+    borderBottomWidth: 2,
+    borderColor: `#ffffff`,
+    borderWidth: 0,
+    height: 40,
+    marginRight: 21,
+    marginLeft: 21,
+    marginTop: 10,
+    outlineWidth: 4,
+    padding: 5,
+    color: 'white',
+    marginBottom: 10,
+  },
 });
 
 export default style;
