@@ -61,6 +61,22 @@ const styles = StyleSheet.create({
     // alignItems: 'center'
   },
   quantityBtn: {
+    backgroundColor: '#FFBA33',
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityBtn1: {
+    backgroundColor: '#E7AA3685',
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityBtn10: {
     backgroundColor: '#E7AA3685',
     width: 25,
     height: 25,

@@ -25,9 +25,10 @@ const styles = StyleSheet.create({
   },
   swipeText: {
     marginHorizontal: 5,
+    marginVertical: 15,
     fontFamily: 'Poppins-Regular',
     color: 'black',
-    fontSize: 10,
+    fontSize: 16,
   },
   // card:{
   //     padding: 15,
@@ -61,9 +62,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    // position:'relative',
-    // right:20,
-    // top: 30
+    position: 'relative',
+    right: 0,
+    top: -17,
   },
   iconTrash: {
     color: 'white',

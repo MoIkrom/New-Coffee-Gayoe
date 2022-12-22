@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {
@@ -7,9 +7,11 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
-// import {useDispatch, useSelector} from 'react-redux';
-// import userAction from '../../redux/actions/user';
+import {useDispatch, useSelector} from 'react-redux';
+
+import authActions from '../../redux/actions/auth';
 
 import styles from '../../styles/Profile';
 import DefaultImg from '../../assets/images/default-img.png';
@@ -19,14 +21,37 @@ const next = require('../../assets/images/arrowRight.png');
 
 const Profile = () => {
   const navigation = useNavigation();
+
+  const [loading, setLoading] = useState(true);
   //   const dispatch = useDispatch();
   //   const profile = useSelector(state => state.profile.profile);
-  //   const auth = useSelector(state => state.auth.userData);
+  // const auth = useSelector(state => state.auth.userData);
+
+  const profile = useSelector(state => state.auth.profile);
 
   const toOerderHistory = () => {
-    navigation.navigate('Order History');
+    navigation.navigate('History');
   };
+  const toEditProfile = () => {
+    navigation.navigate('Editprofile');
+  };
+  const getProfile = async () => {
+    try {
+      // const removeToken = await AsyncStorage.removeItem('token');
+      const getToken = await AsyncStorage.getItem('token');
+      return dispatch(authActions.userIDThunk(getToken));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getProfile();
+    setLoading(false);
+  }, []);
 
+  // useEffect(() => {
+  //   setLoading(false);
+  // }, []);
   //   useEffect(() => {
   //     dispatch(userAction.getUserThunk(auth.token));
   //   }, [dispatch, auth.token]);
@@ -34,25 +59,51 @@ const Profile = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack('HomePage')}>
           <Image source={back} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <View>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('HomePage');
+            }}>
+            <Image source={back} size={20} style={styles.icons} />
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                paddingLeft: 22,
+                position: 'relative',
+                top: -16,
+              }}>
+              Back to Home
+            </Text>
+          </Pressable>
+        </View>
       </View>
       <ScrollView style={styles.containerContent}>
         <Text style={styles.titleContent}>My profile</Text>
         <View style={styles.subTitle}>
           <Text style={styles.textInfo}>Your Information</Text>
           <TouchableOpacity>
-            <Text style={styles.btnEdit}>edit</Text>
+            <Text style={styles.btnEdit} onPress={toEditProfile}>
+              Edit
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.wrapperProfile}>
           <View style={styles.contentImage}>
             <View style={{width: 80, height: 80, borderRadius: 200}}>
-              <Image
-                source={DefaultImg}
-                style={{width: 80, height: 80, borderRadius: 200}}
-              />
+              {loading ? (
+                <ActivityIndicator />
+              ) : (
+                <Image
+                  source={
+                    profile.image === null ? DefaultImg : {uri: profile.image}
+                  }
+                  style={{width: 80, height: 80, borderRadius: 200}}
+                />
+              )}
 
               {/* {profile.isLoading ? (
                 <ActivityIndicator />
@@ -67,16 +118,20 @@ const Profile = () => {
             </View>
           </View>
           <View>
-            <Text style={styles.textName}>{'display_name'}</Text>
-            {/* <Text style={styles.textName}>{profile.display_name}</Text> */}
+            {/* <Text style={styles.textName}>{'display_name'}</Text> */}
+            <Text style={styles.textName}>
+              {profile.display_name === null
+                ? 'Username'
+                : profile.display_name}
+            </Text>
             <View
               style={{
                 borderBottomWidth: 0.5,
                 width: 160,
                 borderBottomColor: '#6A4029',
-                marginBottom: 10,
+                // marginBottom: 5,
               }}>
-              <Text style={styles.textEmail}>{'email'}</Text>
+              <Text style={styles.textEmail}>{profile.email}</Text>
               {/* <Text style={styles.textEmail}>{profile.email}</Text> */}
             </View>
             <View
@@ -86,11 +141,15 @@ const Profile = () => {
                 borderBottomColor: '#6A4029',
                 marginBottom: 10,
               }}>
-              <Text style={styles.textPhone}>{`+62 ${'8123456789'}`}</Text>
-              {/* <Text style={styles.textPhone}>{`+62 ${profile.phone}`}</Text> */}
+              {/* <Text style={styles.textPhone}>{`+62 ${'8123456789'}`}</Text> */}
+              <Text style={styles.textPhone}>{` ${profile.phone_number}`}</Text>
             </View>
-            <Text style={styles.address}>{'address'}</Text>
-            {/* <Text style={styles.address}>{profile.address}</Text> */}
+            {/* <Text style={styles.address}>{'address'}</Text> */}
+            <Text style={styles.address}>
+              {profile.addres === null
+                ? 'Please set your address  '
+                : profile.addres}
+            </Text>
           </View>
         </View>
         <View style={{marginTop: 25}}>

@@ -34,18 +34,20 @@ import close from '../../assets/drawer/close.png';
 // Photo
 import photo from '../../assets/drawer/profile.png';
 import {useNavigation} from '@react-navigation/native';
-// import { useDispatch, useSelector } from 'react-redux';
-// import productAction from '../../redux/actions/product';
+import {useDispatch, useSelector} from 'react-redux';
+import authAction from '../../redux/actions/auth';
+import axios from 'axios';
 
 export default function App() {
   const navigation = useNavigation();
   const {height} = useWindowDimensions();
-  //   const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState('Profile');
   // To get the curretn Status of menu ...
   const [showMenu, setShowMenu] = useState(false);
+  const [profile, setProfile] = useState('');
 
-  //   const products = useSelector(state => state.product.product);
+  const products = useSelector(state => state.auth.product);
   //   const isPending = useSelector(state => state.product.isLoading);
 
   // Animated Properties...
@@ -55,9 +57,25 @@ export default function App() {
   //   const scaleValue = useRef(new Animated.Value(1)).current;
   //   const closeButtonOffset = useRef(new Animated.Value(0)).current;
 
-  //   useEffect(() => {
-  //     dispatch(productAction.getProductThunk());
-  //   }, [dispatch]);
+  useEffect(() => {
+    axios
+      .get(`https://coffee-gayoe.vercel.app/api/v1/users/profile`, {
+        headers: {
+          'x-access-token': token,
+        },
+      })
+      .then(res => {
+        // setProfile(res.data.data);
+        // setProduct(res.data.result.data), setNotfound(search);
+        console.log(res.data.data);
+        // console.log('data ke get lho....');
+      })
+      .catch(err => {
+        setNotfound(err.response.data.msg);
+        // console.log(err.response.data.msg)
+      });
+  }, []);
+
   return (
     <SafeAreaView style={styless.container}>
       <View style={{justifyContent: 'flex-start', padding: 15}}>

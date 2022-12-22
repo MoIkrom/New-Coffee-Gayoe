@@ -15,13 +15,14 @@ import styles from '../../styles/Login';
 // import Input from '../../components/Input';
 import google from '../../assets/images/google.png';
 import {useDispatch, useSelector} from 'react-redux';
-import authAction from '../../redux/actions/auth';
 import {useNavigation} from '@react-navigation/native';
 // import FontAwesome, { SolidIcons } from 'react-native-fontawesome';
 import IconIon from 'react-native-vector-icons/Ionicons';
-import login from '../utils/auth';
-// import axios from 'axios';
+import login from '../../utils/auth';
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import authAction from '../../redux/actions/auth';
+import {StackActions} from '@react-navigation/native';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -56,15 +57,15 @@ const Login = () => {
       email,
       password,
     };
-    login(data)
-      // axios
-      //   .post(`https://coffee-gayoe.vercel.app/api/v1/auth`, data)
+    // login(data)
+
+    axios
+      .post(`https://coffee-gayoe.vercel.app/api/v1/auth`, data)
       .then(res => {
         AsyncStorage.setItem('token', res.data.result.data.token);
         AsyncStorage.setItem('role', res.data.result.data.role);
-        console.log(res.data.result.data.role);
-        // console.log(res);
-
+        // console.log(res.data.result.data.token);
+        // console.log('sebelum axios');
         dispatch(
           authAction.userIDThunk(res.data.result.data.token, () => {
             ToastAndroid.showWithGravity(
@@ -72,9 +73,19 @@ const Login = () => {
               ToastAndroid.LONG,
               ToastAndroid.TOP,
             ),
-              navigate.push('Home');
+              //       navigate.push('Home');
+              //       navigation.push('HomePage');
+              //   }),
+              // );
+              // ToastAndroid.showWithGravity(
+              //   'Login Success',
+              //   ToastAndroid.LONG,
+              //   ToastAndroid.TOP,
+              // ),
+              navigation.navigate('HomePage');
           }),
         );
+        // console.log('sudah dispatch');
       })
       .catch(err => {
         console.log(err);
@@ -156,6 +167,9 @@ const Login = () => {
                 <Text style={styles.textCreate}>Login</Text>
               )}
             </TouchableOpacity>
+            {/* <TouchableOpacity style={styles.createBtn} onPress={handleSubmit}>
+              <Text style={styles.textCreate}>Login</Text>
+            </TouchableOpacity> */}
             <TouchableOpacity style={styles.googleBtn}>
               <View style={styles.googleContainer}>
                 <Image source={google} />

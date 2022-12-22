@@ -17,6 +17,14 @@ export const register = body => {
   return axios.post(URL, body);
 };
 
+export const userID = token => {
+  return axios.get(`https://coffee-gayoe.vercel.app/api/v1/users/profile`, {
+    headers: {
+      'x-access-token': token,
+    },
+  });
+};
+
 // Login
 export const login = body => {
   const URL = `${BaseUrl}api/v1/auth`;

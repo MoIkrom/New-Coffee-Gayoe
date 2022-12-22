@@ -44,7 +44,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 28,
     color: 'black',
-    paddingRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    textAlign: 'center',
+    // paddingRight: 43,
+    // paddingTop: 10,
   },
   bottom: {
     paddingTop: 150,
@@ -122,6 +127,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: 'black',
     paddingTop: 10,
+    // paddingEnd: 10,
   },
   priceTextDisount: {
     fontWeight: 'bold',

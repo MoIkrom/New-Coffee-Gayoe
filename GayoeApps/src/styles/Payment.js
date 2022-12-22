@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   Title: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 14,
+    fontSize: 12,
     color: 'black',
     lineHeight: 21,
   },
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     fontSize: 17,
     color: 'black',
-    paddingRight: 5,
+    // paddingRight: 35,
   },
   CardMethods: {
     backgroundColor: 'white',

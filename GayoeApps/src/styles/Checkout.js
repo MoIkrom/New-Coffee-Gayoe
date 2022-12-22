@@ -12,9 +12,10 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
   },
   icons: {
-    marginRight: 70,
+    marginRight: 50,
     color: 'black',
     fontSize: 30,
+    marginTop: 7,
   },
   titleNavbar: {
     fontFamily: 'Poppins-Bold',
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'grey',
     borderBottomWidth: 0.5,
     marginBottom: 5,
+    paddingBottom: 10,
   },
   CardPhone: {
     paddingTop: 5,
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: 'black',
     marginBottom: 5,
-    marginVertical: 5,
+    marginVertical: 11,
     width: 220,
   },
   total: {

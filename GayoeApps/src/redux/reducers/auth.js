@@ -5,21 +5,26 @@ const initialState = {
   isLoading: false,
   isFulfilled: false,
   error: null,
+  // userData: {
+  //   token: null,
+  //   role: null,
+  //   email: null,
+  // },
   profile: {
     email: null,
     phone_number: null,
     display_name: null,
     firstname: null,
     lastname: null,
-    // role: null,
-    username: null,
+    role: null,
+    // username: null,
     gender: null,
-    // birthday: null,
+    birthday: null,
     addres: null,
     image: `https://res.cloudinary.com/dx7cvqczn/image/upload/v1667811029/coffee_addict/pic_default.png`,
   },
   product: {
-    id_product: null,
+    id: null,
     product_name: null,
     price: 0,
     stock: 0,
@@ -28,19 +33,60 @@ const initialState = {
     image: null,
     description: null,
     status: null,
-    delivery: null,
+    shiping: null,
     total: 0,
-    qty: 0,
-    payment_method: null,
+    qty: null,
     id_promo: null,
+    // payment_method: null,
   },
 };
 
 const authReducer = (prevState = initialState, {type, payload}) => {
-  const {product, logout, profile, pending, rejected, fulfilled} =
-    ACTION_STRING;
+  const {
+    product,
+    login,
+    logout,
+    editProfile,
+    profile,
+    pending,
+    rejected,
+    fulfilled,
+  } = ACTION_STRING;
 
   switch (type) {
+    // login
+    case login + pending:
+      return {
+        ...prevState,
+        isLoading: true,
+        isError: false,
+        isFulfilled: false,
+        error: null,
+      };
+
+    case login + rejected:
+      return {
+        ...prevState,
+        isLoading: false,
+        isError: true,
+        isFulfilled: false,
+        error: payload.error.response.data.msg,
+      };
+
+    case login + fulfilled:
+      return {
+        ...prevState,
+        isError: false,
+        isFulfilled: true,
+        isLoading: false,
+        error: null,
+        userData: {
+          token: payload.result.data.token,
+          role: payload.result.data.role,
+          email: payload.result.data.email,
+        },
+      };
+
     // profile
     case profile + pending:
       return {
@@ -66,17 +112,42 @@ const authReducer = (prevState = initialState, {type, payload}) => {
         isLoading: false,
         error: null,
         profile: {
-          email: payload.data.result[0].email,
-          role: payload.data.result[0].role,
-          phone_number: payload.data.result[0].phone_number,
-          display_name: payload.data.result[0].displayname,
-          firstname: payload.data.result[0].firstname,
-          lastname: payload.data.result[0].lastname,
-          gender: payload.data.result[0].gender,
+          email: payload.data.result.result[0].email,
+          role: payload.data.result.result[0].role,
+          phone_number: payload.data.result.result[0].phone_number,
+          display_name: payload.data.result.result[0].display_name,
+          firstname: payload.data.result.result[0].firstname,
+          lastname: payload.data.result.result[0].lastname,
+          gender: payload.data.result.result[0].gender,
           // birthday: payload.data.result[0].birthday,
-          addres: payload.data.result[0].addres,
-          image: payload.data.result[0].image,
+          addres: payload.data.result.result[0].addres,
+          image: payload.data.result.result[0].image,
         },
+      };
+
+    // Edit Profile
+    case editProfile + pending:
+      return {
+        ...prevState,
+        isLoading: true,
+        isError: false,
+        isFulfilled: false,
+      };
+    case editProfile + rejected:
+      return {
+        ...prevState,
+        isError: true,
+        isLoading: false,
+        error: payload.error,
+      };
+    case editProfile + fulfilled:
+      return {
+        ...prevState,
+        isLoading: false,
+        isError: false,
+        isFulfilled: true,
+        isLoggedIn: true,
+        profile: {...prevState.profile, ...payload.data.data},
       };
 
     // product
@@ -88,17 +159,30 @@ const authReducer = (prevState = initialState, {type, payload}) => {
         isLoading: false,
         error: null,
         product: {
-          id_product: payload.data.id_product,
-          product_name: payload.data.name_product,
+          id: payload.data.id,
+          product_name: payload.data.product_name,
           price: payload.data.price,
+          stock: payload.data.stock,
           size: payload.data.size,
+          category: payload.data.category,
           image: payload.data.image,
+          description: payload.data.description,
           status: payload.data.status,
-          delivery: payload.data.delivery,
-          total: payload.data.total,
+          shiping: payload.data.shiping,
+          total: payload.data.subTotal,
           qty: payload.data.qty,
-          payment_method: payload.data.payment_method,
-          id_promo: payload.data.id_promo,
+
+          // id_product: payload.data.id_product,
+          // product_name: payload.data.name_product,
+          // price: payload.data.price,
+          // size: payload.data.size,
+          // image: payload.data.image,
+          // status: payload.data.status,
+          // delivery: payload.data.delivery,
+          // total: payload.data.total,
+          // qty: payload.data.qty,
+          // payment_method: payload.data.payment_method,
+          // id_promo: payload.data.id_promo,
         },
       };
 

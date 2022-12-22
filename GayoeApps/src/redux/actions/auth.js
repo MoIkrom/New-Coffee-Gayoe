@@ -1,7 +1,38 @@
 import ACTION_STRING from './actionString';
-import {Logout, userID} from '../../utils/axios';
+import {Logout, userID, login} from '../../utils/auth';
 
-// Action Logout
+// Action Login
+const loginPending = () => ({
+  type: ACTION_STRING.login.concat(ACTION_STRING.pending),
+});
+
+const loginRejected = error => ({
+  type: ACTION_STRING.login.concat(ACTION_STRING.rejected),
+  payload: {error},
+});
+
+const loginFulfilled = data => ({
+  type: ACTION_STRING.login.concat(ACTION_STRING.fulfilled),
+  payload: {data},
+});
+
+const loginThunk = (body, cbSuccess, cbDenied) => {
+  return async dispatch => {
+    try {
+      dispatch(loginPending());
+      const result = await login(body);
+      dispatch(loginFulfilled(result.data));
+
+      typeof cbSuccess === 'function' && cbSuccess();
+    } catch (error) {
+      dispatch(loginRejected(error));
+      console.log(error);
+      typeof cbDenied === 'function' && cbDenied(error.response.data.msg);
+    }
+  };
+};
+
+// Action logout
 const logoutPending = () => ({
   type: ACTION_STRING.logout.concat(ACTION_STRING.pending),
 });
@@ -46,6 +77,21 @@ const profileFulfilled = data => ({
   payload: {data},
 });
 
+// Edit Profile
+const editProfilePending = () => ({
+  type: ACTION_STRING.editProfile.concat(ACTION_STRING.pending),
+});
+
+const editProfileRejected = error => ({
+  type: ACTION_STRING.editProfile.concat(ACTION_STRING.rejected),
+  payload: {error},
+});
+
+const editProfileFulfilled = data => ({
+  type: ACTION_STRING.editProfile.concat(ACTION_STRING.fulfilled),
+  payload: {data},
+});
+
 const userIDThunk = (token, navigate) => {
   return async dispatch => {
     try {
@@ -55,6 +101,7 @@ const userIDThunk = (token, navigate) => {
       dispatch(profileFulfilled(result.data));
       if (typeof navigate === 'function') navigate();
     } catch (error) {
+      console.log(error);
       dispatch(profileRejected(error));
     }
   };
@@ -81,6 +128,7 @@ const authAction = {
   logoutThunk,
   userIDThunk,
   productThunk,
+  loginThunk,
 };
 
 export default authAction;

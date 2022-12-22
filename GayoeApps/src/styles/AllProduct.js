@@ -11,10 +11,34 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9F9F9',
   },
+  wrapperSearch: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 30,
+    // marginLeft: 40,
+    marginRight: 25,
+    borderRadius: 30,
+    backgroundColor: '#EFEEEE',
+    elevation: 1,
+    shadowColor: '#393939',
+  },
+  textPlaceholder: {
+    fontFamily: 'Poppins-SemiBold',
+    fontWeight: 'bold',
+    fontSize: 17,
+    flex: 1,
+    color: '#6A4029',
+  },
+  Icons1: {
+    fontSize: 30,
+    marginHorizontal: 3,
+    color: 'grey',
+  },
   icons: {
     marginRight: 30,
     color: 'black',
     fontSize: 25,
+    marginTop: 3,
   },
   titleNavbar: {
     fontFamily: 'Poppins-Black',
@@ -38,7 +62,7 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     paddingRight: 4,
     paddingTop: 25,
-    marginHorizontal: 25,
+    marginHorizontal: 55,
   },
   card: {
     backgroundColor: '#FFFFFF',

@@ -14,7 +14,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   icon: {
-    marginHorizontal: 10,
+    marginHorizontal: 15,
+    height: 30,
+    width: 30,
+    marginTop: 6,
   },
   continerSwipe: {
     height: 288,
@@ -27,7 +30,7 @@ const styles = StyleSheet.create({
   imageDrawer: {
     borderRadius: 150,
     width: 142,
-    height: 152,
+    height: 142,
   },
   username: {
     fontFamily: 'Poppins-SemiBold',
@@ -63,6 +66,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
     fontSize: 17,
     color: '#6A4029',
+  },
+  textBottoms: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#6A4029',
+    position: 'relative',
+    // top: -25,
   },
   Icons: {
     fontSize: 30,

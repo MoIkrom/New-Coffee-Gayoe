@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Image,
@@ -14,46 +13,59 @@ import {useNavigation} from '@react-navigation/native';
 import styles from '../../styles/Checkout';
 import IconComunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Divider} from '@rneui/themed';
+import axios from 'axios';
+import back from '../../assets/images/backblack.png';
+// import {NativeBaseProvider, Radio} from 'native-base';
 
-// import {useDispatch, useSelector} from 'react-redux';
-// import transactionActions from '../../redux/actions/transaction';
-// import cartAction from '../redux/actions/transaction'
+import {useDispatch, useSelector} from 'react-redux';
+import authAction from '../../redux/actions/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Checkout() {
-  const [method, setMethod] = useState('4');
+  // const [method, setMethod] = useState('4');
+  const profile = useSelector(state => state.auth.profile);
+  const product = useSelector(state => state.auth.product);
+  const dispatch = useDispatch();
+  const [value, setValue] = useState('1');
 
   const navigation = useNavigation();
-  // // const dispatch = useDispatch();
-  // const cartState = useSelector(state => state.transaction.dataCheckout);
-  // const profile = useSelector(state => state.profile.profile);
-
-  // console.log(method);
 
   const costing = price => {
-    return parseFloat(price)
-      .toFixed()
-      .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    return (
+      'Rp ' +
+      parseFloat(price)
+        .toFixed()
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+    );
+  };
+
+  const handleValue = () => {
+    // value === 1 ? 5000 : 0;
+    if (value === '1') return 5000;
+    return 0;
   };
 
   const deliveryMethodHandler = () => {
     const data = {
-      id: cartState.id,
-      image: cartState.image,
-      productName: cartState.productName,
-      price: cartState.price,
-      size: cartState.size,
-      qty: cartState.qty,
-      subTotal: cartState.subTotal,
-      delivMethod: method,
+      id: product.id,
+      image: product.image,
+      product_name: product.product_name,
+      price: product.price,
+      size: product.size,
+      qty: product.qty,
+      subTotal: product.total,
+      total: product.total + handleValue(),
+      shiping: parseInt(value),
     };
-    dispatch(transactionActions.dataPayment(data));
-    navigation.navigate('Payment');
+    dispatch(authAction.productThunk(data));
+    navigation.replace('Payment');
   };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.navbar}>
-        <IconComunity
-          name={'chevron-left'}
+        <Image
+          source={back}
           size={20}
           style={styles.icons}
           onPress={() => {
@@ -66,74 +78,106 @@ function Checkout() {
         <Text style={styles.TitleDelivery}>Delivery</Text>
         <Text style={styles.TitleAddress}>Address details</Text>
         <View style={styles.CardAddress}>
-          <Text style={styles.CardStreet}>Jakarta Street</Text>
-          <Text style={styles.CardStreetDetail}>profile.address</Text>
-          <Text style={styles.CardPhone}>{`+62 ${'28282891'}`}</Text>
+          <Text style={styles.CardStreet}>{profile.display_name}</Text>
+          <Text style={styles.CardStreetDetail}>{profile.addres}</Text>
+          <Text style={styles.CardPhone}>{profile.phone_number}</Text>
           {/* <Text style={styles.CardStreetDetail}>{profile.address}</Text>
           <Text style={styles.CardPhone}>{`+62 ${profile.phone}`}</Text> */}
         </View>
         <Text style={styles.TitleAddress}>Delivery methods</Text>
-        {/* <View style={styles.CardMethods}>
+        <View style={styles.CardMethods}>
           <View>
             <View style={styles.radio}>
               <Pressable
                 style={
-                  method === '4' ? styles.checkedOuter : styles.unchekedOuter
+                  value === '1' ? styles.checkedOuter : styles.unchekedOuter
                 }
                 onPress={() => {
-                  setMethod('4');
+                  setValue('1');
                 }}>
                 <View
                   style={
-                    method === '4' ? styles.checkedInner : undefined
+                    value === '1' ? styles.checkedInner : undefined
                   }></View>
               </Pressable>
             </View>
             <View style={styles.radio}>
               <Pressable
                 style={
-                  method === '3' ? styles.checkedOuter : styles.unchekedOuter
+                  value === '2' ? styles.checkedOuter : styles.unchekedOuter
                 }
                 onPress={() => {
-                  setMethod('3');
+                  setValue('2');
                 }}>
                 <View
                   style={
-                    method === '3' ? styles.checkedInner : undefined
+                    value === '2' ? styles.checkedInner : undefined
                   }></View>
               </Pressable>
             </View>
             <View style={styles.radio}>
               <Pressable
                 style={
-                  method === '1' ? styles.checkedOuter : styles.unchekedOuter
+                  value === '3' ? styles.checkedOuter : styles.unchekedOuter
                 }
                 onPress={() => {
-                  setMethod('1');
+                  setValue('3');
                 }}>
                 <View
                   style={
-                    method === '1' ? styles.checkedInner : undefined
+                    value === '3' ? styles.checkedInner : undefined
                   }></View>
               </Pressable>
             </View>
           </View>
+          {/* <View style={styles.option_container}>
+            <Radio.Group
+              defaultValue="1"
+              name="exampleGroup"
+              accessibilityLabel="favorite colorscheme"
+              onChange={nextValue => {
+                setValue(nextValue);
+              }}
+              value={value}>
+              <View style={styles.border_bottom}>
+                <View style={styles.options}>
+                  <Radio colorScheme={'amber'} value="1" my={1}>
+                    Door delivery
+                  </Radio>
+                </View>
+              </View>
+              <View style={styles.border_bottom}>
+                <View style={styles.options}>
+                  <Radio colorScheme="amber" value="2" my={1}>
+                    Pick up at store
+                  </Radio>
+                </View>
+              </View>
+              <View style={styles.margin_dine}>
+                <View style={styles.options}>
+                  <Radio colorScheme="amber" value="3" my={1}>
+                    Dine in
+                  </Radio>
+                </View>
+              </View>
+            </Radio.Group>
+          </View> */}
           <View>
             <Text
               style={styles.textMethod}
               onPress={() => {
-                setMethod('4');
+                setValue('1');
               }}>
               Door delivery
             </Text>
             <Divider
               width={1}
-              style={{width: '100%', marginTop: 5, marginBottom: 5.5}}
+              style={{width: '100%', marginTop: 6, marginBottom: 5.5}}
             />
             <Text
               style={styles.textMethod}
               onPress={() => {
-                setMethod('3');
+                setValue('2');
               }}>
               Pick up at store
             </Text>
@@ -144,9 +188,9 @@ function Checkout() {
             <Text
               style={styles.textMethod}
               onPress={() => {
-                setMethod('1');
+                setValue('3');
               }}>
-              Dine
+              Dine In
             </Text>
           </View>
         </View>
@@ -157,7 +201,9 @@ function Checkout() {
             marginVertical: 25,
           }}>
           <Text style={styles.total}>Total</Text>
-          <Text style={styles.price}>IDR {costing(cartState.subTotal)}</Text>
+          <Text style={styles.price}>
+            {costing(product.total + handleValue())}
+          </Text>
         </View>
         <View style={{paddingBottom: 30}}>
           <TouchableOpacity activeOpacity={0.8} onPress={deliveryMethodHandler}>
@@ -185,7 +231,7 @@ function Checkout() {
               </Text>
             </View>
           </TouchableOpacity>
-        </View> */}
+        </View>
       </View>
     </ScrollView>
   );

@@ -35,7 +35,8 @@ const styles = StyleSheet.create({
   },
   btnEdit: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 15,
+    fontSize: 24,
+    fontWeight: 'bold',
     color: '#6A4029',
   },
   wrapperProfile: {
