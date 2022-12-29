@@ -37,20 +37,15 @@ function ProductDetail({route}) {
   const [product, setProduct] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-  //   const productId = props.route.params;
-  //   const auth = useSelector(state => state.auth.userData);
-  //   const detail = useSelector(state => state.product.detail);
   const [size, setSize] = useState('R');
   const [modalVisible, setModalVisible] = useState(false);
 
   const getProductByid = () => {
-    // setLoading(true);
     axios
       .get(`https://coffee-gayoe.vercel.app/api/v1/product/${id_product}`)
       .then(res => {
         setProduct(res.data.result.data[0]);
         setLoading(false);
-        console.log('masi loading');
       })
 
       .catch(err => {
@@ -70,49 +65,6 @@ function ProductDetail({route}) {
     );
   };
 
-  //   console.log(size);
-
-  //   const addCart = () => {
-  //     if (!modalVisible) return setModalVisible(true);
-  //     const cart = {
-  //       id: productId,
-  //       price: detail.price,
-  //       image: detail.image,
-  //       productName: detail.product_name,
-  //       size: size,
-  //     };
-  //     dispatch(transactionActions.dataTransaction(cart));
-  //     return ToastAndroid.showWithGravity(
-  //       `Added Product To Cart`,
-  //       ToastAndroid.SHORT,
-  //       ToastAndroid.TOP,
-  //       navigation.navigate('Cart'),
-  //     );
-  //   };
-
-  //   useEffect(() => {
-  //     dispatch(productAction.getDetailThunk(productId, auth.token));
-  //   }, [dispatch]);
-
-  // useEffect(()=>{
-  //     const BaseUrl = process.env.BACKEND_URL
-  //     axios.get(`${BaseUrl}/products/${product_id}`).then((result)=>{
-  //         setProduct(result.data.data);
-  //     }).catch((error)=>{
-  //         console.log(error);
-  //         ToastAndroid.showWithGravityAndOffset(
-  //             `Something Error`,
-  //             ToastAndroid.SHORT,
-  //             ToastAndroid.TOP,
-  //             25,
-  //             50
-  //         );
-  //         navigation.goBack()
-  //     })
-  // })
-
-  // useEffect(()=>{console.log(product)})
-
   const handleRedux = () => {
     dispatch(
       authAction.productThunk(
@@ -124,14 +76,9 @@ function ProductDetail({route}) {
           image: product.image,
           qty: 1,
           size: size,
-          // status: null,
-          // delivery: null,
-          // payment_method: null,
-          // id_promo: null,
         },
         () => {
           navigation.navigate('Cart');
-          // console.log('masuk coy');
         },
       ),
     );
