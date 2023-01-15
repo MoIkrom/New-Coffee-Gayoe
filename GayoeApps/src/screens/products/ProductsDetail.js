@@ -25,6 +25,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import authAction from '../../redux/actions/auth';
 import back from '../../assets/images/back.png';
 import cart from '../../assets/images/shopping-cart.png';
+import {onBackPress} from '../../utils/backpress';
 
 // import transactionActions from '../../redux/actions/transaction';
 // import axios from 'axios';
@@ -39,7 +40,10 @@ function ProductDetail({route}) {
   const dispatch = useDispatch();
   const [size, setSize] = useState('R');
   const [modalVisible, setModalVisible] = useState(false);
-
+  const handleBackPress = () => {
+    navigation.goBack();
+    return true;
+  };
   const getProductByid = () => {
     axios
       .get(`https://coffee-gayoe.vercel.app/api/v1/product/${id_product}`)
@@ -54,6 +58,7 @@ function ProductDetail({route}) {
   };
   useEffect(() => {
     getProductByid();
+    onBackPress(handleBackPress);
   }, []);
 
   const costing = price => {

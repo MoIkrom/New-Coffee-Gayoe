@@ -71,7 +71,7 @@ function Navbar({children}) {
         ToastAndroid.LONG,
         ToastAndroid.TOP,
       ),
-        navigation.navigate('Home');
+        navigation.navigate('Login');
     } catch (error) {
       console.log(error);
     }
@@ -101,7 +101,7 @@ function Navbar({children}) {
     return (
       <View>
         <View style={styles.continerSwipe}>
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <TouchableOpacity onPress={() => navigation.replace('Profile')}>
             <Image
               source={
                 profile.image === null ? DefaultImg : {uri: profile.image}

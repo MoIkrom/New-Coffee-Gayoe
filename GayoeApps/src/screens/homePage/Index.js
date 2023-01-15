@@ -13,8 +13,6 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import Navbar from '../../components/Navbar';
 import Card from '../../components/CardProduct';
-import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
-import IconIon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import {useDispatch} from 'react-redux';
 import React, {useEffect, useState} from 'react';
@@ -36,14 +34,14 @@ const Home = () => {
 
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
-  const [navFav, setNavFav] = useState(false);
+  const [navFav, setNavFav] = useState(true);
   const [navPromo, setNavPromo] = useState(true);
-  const [navFood, setFood] = useState(true);
+  const [navFood, setFood] = useState(false);
   const [navCoff, setNavCoff] = useState(true);
   const [navNonCoff, setNavNonCoff] = useState(true);
   const [navadd, setNavadd] = useState(true);
-  const [category, setCategory] = useState('favorite');
-  const [sort, setSort] = useState('favorite');
+  const [category, setCategory] = useState('Food');
+  const [sort, setSort] = useState('name');
   const [product, setProduct] = useState([]);
   const [notfound, setNotfound] = useState('');
   const [loading, setLoading] = useState(true);
@@ -119,7 +117,12 @@ const Home = () => {
       setSort();
     setSearch(search);
   };
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (token === null) navigation.replace('Login');
+  };
   useEffect(() => {
+    getToken();
     setLoading(true);
     axios
       .get(
@@ -127,11 +130,8 @@ const Home = () => {
       )
       .then(res => {
         setProduct(res.data.data);
-        // setProduct(res.data.data),
         setNotfound(search);
         setLoading(false);
-        console.log(res.data.data);
-        // console.log('data ke get lho....');
       })
       .catch(err => {
         setNotfound(err.response.data.msg);
@@ -188,13 +188,13 @@ const Home = () => {
                   Favorite
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity>
+              {/* <TouchableOpacity>
                 <Text
                   style={navPromo ? styles.categorys : styles.nav_product_black}
                   onPress={navActive2}>
                   Promo
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity>
                 <Text
                   style={navFood ? styles.categorys : styles.nav_product_black}

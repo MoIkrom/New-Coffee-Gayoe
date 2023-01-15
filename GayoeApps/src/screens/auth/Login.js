@@ -10,7 +10,7 @@ import {
   ScrollView,
   Pressable,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import styles from '../../styles/Login';
 // import Input from '../../components/Input';
@@ -26,6 +26,8 @@ import authAction from '../../redux/actions/auth';
 import {StackActions} from '@react-navigation/native';
 import eye from '../../assets/images/eye4.png';
 import eyeoff from '../../assets/images/eyeslash2.png';
+
+import {onBackPress} from '../../utils/backpress';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -67,16 +69,6 @@ const Login = () => {
       .then(res => {
         AsyncStorage.setItem('token', res.data.result.data.token);
         AsyncStorage.setItem('role', res.data.result.data.role);
-        // dispatch(
-        //   authAction.userIDThunk(res.data.result.data.token, () => {
-        //     ToastAndroid.showWithGravity(
-        //       'Login Success',
-        //       ToastAndroid.LONG,
-        //       ToastAndroid.TOP,
-        //     ),
-        //       navigation.navigate('HomePage');
-        //   }),
-        // );
         ToastAndroid.showWithGravity(
           'Login Success',
           ToastAndroid.LONG,
@@ -93,7 +85,19 @@ const Login = () => {
         );
       });
   };
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (token !== null) navigation.replace('HomePage');
+  };
+  const handleBackPress = () => {
+    navigation.goBack();
+    return true;
+  };
 
+  useEffect(() => {
+    getToken();
+    // onBackPress(handleBackPress);
+  });
   return (
     <View style={styles.container}>
       <ScrollView>

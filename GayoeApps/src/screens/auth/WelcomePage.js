@@ -32,7 +32,7 @@ const App = () => {
     try {
       const getToken = await AsyncStorage.getItem('token');
       getToken !== null
-        ? navigation.navigate('HomePage')
+        ? navigation.replace('HomePage')
         : navigation.navigate('Home');
     } catch (error) {
       console.log(error);

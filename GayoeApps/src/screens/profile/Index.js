@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
+import {onBackPress} from '../../utils/backpress';
 import authActions from '../../redux/actions/auth';
 import axios from 'axios';
 import styles from '../../styles/Profile';
@@ -31,18 +32,17 @@ const Profile = () => {
   // const profile = useSelector(state => state.auth.profile);
 
   const toOerderHistory = () => {
-    navigation.navigate('History');
+    navigation.replace('History');
+  };
+  const toEditPassword = () => {
+    navigation.replace('ResetPwd');
   };
   const toEditProfile = () => {
-    navigation.navigate('Editprofile');
+    navigation.replace('Editprofile');
   };
 
   const getProfile = async () => {
     const token = await AsyncStorage.getItem('token');
-    //   return dispatch(authActions.userIDThunk(getToken));
-    // } catch (error) {
-    //   console.log(error);
-    // }
     setLoading(true);
     axios
       .get(`https://coffee-gayoe.vercel.app/api/v1/users/profile`, {
@@ -51,15 +51,18 @@ const Profile = () => {
       .then(res => {
         setProfile(res.data.result.result[0]);
         setLoading(false);
-        // console.log(res.data.result.result[0]);
-        // console.log(res);
       })
       .catch(err => {
         console.log(err);
       });
   };
+  const handleBackPress = () => {
+    navigation.replace('HomePage');
+    return true;
+  };
   useEffect(() => {
     getProfile();
+    onBackPress(handleBackPress);
     setLoading(false);
   }, []);
 
@@ -79,7 +82,7 @@ const Profile = () => {
         <View>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('HomePage');
+              navigation.replace('HomePage');
             }}>
             <Image source={back} size={20} style={styles.icons} />
             <Text
@@ -169,7 +172,7 @@ const Profile = () => {
             </Text>
             <Image source={next} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btn}>
+          <TouchableOpacity style={styles.btn} onPress={toEditPassword}>
             <Text
               style={{
                 fontFamily: 'Poppins-Bold',

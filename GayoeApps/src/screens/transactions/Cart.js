@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {
   View,
@@ -13,7 +13,7 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import styles from '../../styles/Cart';
 import IconComunity from 'react-native-vector-icons/MaterialCommunityIcons';
-// import Sample from "../image/Hazel.png"
+import {onBackPress} from '../../utils/backpress';
 import Icons from 'react-native-vector-icons/FontAwesome5';
 import {Divider} from '@rneui/themed';
 import back from '../../assets/images/backblack.png';
@@ -108,6 +108,13 @@ function Cart() {
     dispatch(authAction.productThunk(data));
     navigation.navigate('Checkout');
   };
+  const handleBackPress = () => {
+    navigation.goBack();
+    return true;
+  };
+  useEffect(() => {
+    onBackPress(handleBackPress);
+  }, []);
 
   return (
     <ScrollView style={styles.container}>

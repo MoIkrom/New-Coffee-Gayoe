@@ -62,11 +62,18 @@ const styles = StyleSheet.create({
     color: 'black',
     paddingLeft: 40,
   },
+  colon: {
+    paddingLeft: 55,
+    fontFamily: 'Poppins-Regular',
+    fontSize: 15,
+    color: 'black',
+  },
   CardStreetDetail: {
     fontFamily: 'Poppins-Regular',
     fontSize: 15,
     color: 'black',
-    paddingLeft: 52,
+    paddingLeft: 5,
+    width: 200,
   },
   contdel: {
     display: 'flex',

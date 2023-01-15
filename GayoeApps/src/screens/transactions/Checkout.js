@@ -17,6 +17,8 @@ import axios from 'axios';
 import back from '../../assets/images/backblack.png';
 // import {NativeBaseProvider, Radio} from 'native-base';
 
+import {onBackPress} from '../../utils/backpress';
+
 import {useDispatch, useSelector} from 'react-redux';
 import authAction from '../../redux/actions/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -60,8 +62,13 @@ function Checkout() {
         console.log(err);
       });
   };
+  const handleBackPress = () => {
+    navigation.goBack();
+    return true;
+  };
   useEffect(() => {
     getProfile();
+    onBackPress(handleBackPress);
   }, []);
   const handleValue = () => {
     // value === 1 ? 5000 : 0;
@@ -110,7 +117,8 @@ function Checkout() {
           </View>
           <View style={styles.contdel}>
             <Text style={styles.CardStreets}>Address</Text>
-            <Text style={styles.CardStreetDetail}> : {address}</Text>
+            <Text style={styles.colon}>:</Text>
+            <Text style={styles.CardStreetDetail}>{address}</Text>
           </View>
           <View style={styles.contdel}>
             <Text style={styles.CardStreets}>Phone Number </Text>

@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
 import {
   View,
@@ -14,7 +14,7 @@ import {
 
 import {useNavigation} from '@react-navigation/native';
 import styles from '../../styles/Payment';
-import IconComunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import {onBackPress} from '../../utils/backpress';
 import {Divider} from '@rneui/themed';
 import back from '../../assets/images/backblack.png';
 import card from '../../assets/images/card.png';
@@ -30,7 +30,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Payment() {
   // const [Payment, setPayment] = useState();
-  // const [isLoading, setLoading] = useState(false)
   const product = useSelector(state => state.auth.product);
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -70,35 +69,14 @@ function Payment() {
       if (value === 'Cash On Delivery') setStatusPaid('Pending');
       setLoading(true);
       const getToken = await AsyncStorage.getItem('token');
-      console.log(value);
-      console.log(statusPaid);
       const result = await transactions(getToken, {
-        // product_id: product.id_product,
-        // promo_id: product.id_promo,
-        // delivery_id: product.delivery,
-        // method_payment: value,
-        // qty: product.qty,
-        // tax: 10,
-        // total: product.total,
-        // status: statusPaid,
-
         product_id: product.id,
         qty: product.qty,
         shiping: product.shiping,
         total: product.total,
         payment: value,
         status: statusPaid,
-        // image: product.image,
-        // product_name: product.product_name,
-        // price: product.price,
-        // size: product.size,
-        // subTotal: product.total,
       });
-      // await handleShowNotification(
-      //   result.data.result.data.name,
-      //   result.data.result.data.image,
-      // );
-      // console.log(result);
       handleRemoveRedux();
       setLoading(false);
       navigation.replace('History');
@@ -118,20 +96,29 @@ function Payment() {
   const C = props => (
     <Text style={{fontWeight: 'bold', fontSize: 22}}>{props.children}</Text>
   );
+  const handleBackPress = () => {
+    navigation.goBack();
+    return true;
+  };
+  useEffect(() => {
+    onBackPress(handleBackPress);
+  }, []);
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.navbar}>
-        <Image
-          source={back}
-          size={20}
-          style={{marginTop: 5, marginRight: 40}}
-          onPress={() => {
-            navigation.goBack();
-          }}
-        />
-        <Text style={styles.titleNavbar}>Payment</Text>
-      </View>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.goBack();
+        }}>
+        <View style={styles.navbar}>
+          <Image
+            source={back}
+            size={20}
+            style={{marginTop: 5, marginRight: 40}}
+          />
+          <Text style={styles.titleNavbar}>Payment</Text>
+        </View>
+      </TouchableOpacity>
       <View style={{paddingTop: 30}}>
         <Text style={styles.TitleProduct}>Products</Text>
         <View style={styles.Containercard}>
@@ -152,15 +139,11 @@ function Payment() {
               <Text style={styles.Title}>
                 Size : <B>{product.size}</B>
               </Text>
-              {/* <Text style={styles.Title}>{cartState.productName}</Text>
-              <Text style={styles.Title}>x {cartState.qty}</Text>
-              <Text style={styles.Title}>{size()}</Text> */}
             </View>
             <View style={{marginHorizontal: 20}}>
               <Text style={styles.price}>
                 <C>{costing(product.total)}</C>
               </Text>
-              {/* <Text style={styles.price}>IDR {costing(cartState.price)}</Text> */}
             </View>
           </View>
         </View>
@@ -277,7 +260,6 @@ function Payment() {
           }}>
           <Text style={styles.totals}>Total</Text>
           <Text style={styles.prices}>{costing(product.total)}</Text>
-          {/* <Text style={styles.prices}>IDR {costing(cartState.subTotal)}</Text> */}
         </View>
         <View style={{paddingBottom: 30}}>
           <TouchableOpacity activeOpacity={0.8} onPress={handleTransactions}>

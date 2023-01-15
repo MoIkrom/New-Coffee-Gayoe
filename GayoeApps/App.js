@@ -9,6 +9,7 @@ import Signup from './src/screens/auth/Signup';
 import Login from './src/screens/auth/Login';
 import Forgot from './src/screens/auth/Forgot';
 import Reset from './src/screens/auth/Reset';
+import ResetPwd from './src/screens/auth/EditPassword';
 import HomePage from './src/screens/homePage/Index';
 import Drawer from './src/screens/drawer/Index';
 import ProductDetail from './src/screens/products/ProductsDetail';
@@ -79,6 +80,11 @@ function App() {
         <Stack.Screen
           name="Editprofile"
           component={Editprofile}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="ResetPwd"
+          component={ResetPwd}
           options={{headerShown: false}}
         />
         <Stack.Screen
