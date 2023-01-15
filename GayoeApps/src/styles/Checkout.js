@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     fontSize: 34,
+    // paddingBottom: 10,
   },
   TitleAddress: {
     fontFamily: 'Poppins-Bold',
@@ -48,19 +49,36 @@ const styles = StyleSheet.create({
     color: 'black',
     borderBottomColor: 'grey',
     borderBottomWidth: 0.5,
-    marginBottom: 5,
+    paddingBottom: 5,
+  },
+  CardStreets: {
+    fontFamily: 'Poppins-SemiBold',
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  d: {
+    fontFamily: 'Poppins-SemiBold',
+    // fontWeight: 'bold',
+    color: 'black',
+    paddingLeft: 40,
   },
   CardStreetDetail: {
     fontFamily: 'Poppins-Regular',
     fontSize: 15,
     color: 'black',
+    paddingLeft: 52,
+  },
+  contdel: {
+    display: 'flex',
+    flexDirection: 'row',
     borderBottomColor: 'grey',
     borderBottomWidth: 0.5,
-    marginBottom: 5,
     paddingBottom: 10,
+    paddingTop: 10,
   },
   CardPhone: {
-    paddingTop: 5,
+    paddingLeft: 15,
+
     fontFamily: 'Poppins-Regular',
     fontSize: 15,
     color: 'black',

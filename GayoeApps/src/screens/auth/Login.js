@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TextInput,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import React, {useState} from 'react';
 
@@ -23,6 +24,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authAction from '../../redux/actions/auth';
 import {StackActions} from '@react-navigation/native';
+import eye from '../../assets/images/eye4.png';
+import eyeoff from '../../assets/images/eyeslash2.png';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -64,58 +67,33 @@ const Login = () => {
       .then(res => {
         AsyncStorage.setItem('token', res.data.result.data.token);
         AsyncStorage.setItem('role', res.data.result.data.role);
-        // console.log(res.data.result.data.token);
-        // console.log('sebelum axios');
-        dispatch(
-          authAction.userIDThunk(res.data.result.data.token, () => {
-            ToastAndroid.showWithGravity(
-              'Login Success',
-              ToastAndroid.LONG,
-              ToastAndroid.TOP,
-            ),
-              //       navigate.push('Home');
-              //       navigation.push('HomePage');
-              //   }),
-              // );
-              // ToastAndroid.showWithGravity(
-              //   'Login Success',
-              //   ToastAndroid.LONG,
-              //   ToastAndroid.TOP,
-              // ),
-              navigation.navigate('HomePage');
-          }),
-        );
-        // console.log('sudah dispatch');
+        // dispatch(
+        //   authAction.userIDThunk(res.data.result.data.token, () => {
+        //     ToastAndroid.showWithGravity(
+        //       'Login Success',
+        //       ToastAndroid.LONG,
+        //       ToastAndroid.TOP,
+        //     ),
+        //       navigation.navigate('HomePage');
+        //   }),
+        // );
+        ToastAndroid.showWithGravity(
+          'Login Success',
+          ToastAndroid.LONG,
+          ToastAndroid.TOP,
+        ),
+          navigation.navigate('HomePage');
       })
       .catch(err => {
         console.log(err);
         ToastAndroid.showWithGravity(
-          err.response.data.msg.msg,
+          err.response.data.msg,
           ToastAndroid.LONG,
           ToastAndroid.TOP,
         );
       });
   };
-  // const handleSubmit = e => {
-  //   e.preventDefault();
 
-  //   const loginSuccess = () => {
-  //     ToastAndroid.showWithGravity(
-  //       `Welcome ${form.email}, login successfully`,
-  //       ToastAndroid.SHORT,
-  //       ToastAndroid.TOP,
-  //     );
-  //     navigation.navigate('HomePage');
-  //   };
-  //   const loginError = error => {
-  //     ToastAndroid.showWithGravity(
-  //       `${error}`,
-  //       ToastAndroid.SHORT,
-  //       ToastAndroid.TOP,
-  //     );
-  //   };
-  //   dispatch(authAction.loginThunk(form, loginSuccess, loginError));
-  // };
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -144,11 +122,13 @@ const Login = () => {
                 onChangeText={valuePassword}
                 keyboardType="password"
               />
-              <IconIon
-                name={isPwdShown ? 'eye' : 'eye-off'}
-                style={styles.iconPwd}
-                onPress={tooglePassword}
-              />
+
+              <Pressable onPress={tooglePassword}>
+                <Image
+                  source={isPwdShown ? eye : eyeoff}
+                  style={styles.iconPwd}
+                />
+              </Pressable>
             </View>
             <Text
               style={styles.forgot}

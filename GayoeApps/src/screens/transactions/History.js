@@ -53,8 +53,8 @@ function History() {
       // console.log(response.data.result.data);
       setHistory(response.data.result.data);
       // setDeps(response.data.result.data.length)
-      // setDeps(response.data.result.data.length);
-      // console.log(response.data.result.data.length);
+      navigation.goBack('Home');
+      console.log('ini response' + response);
       setLoading(false);
     } catch (error) {
       // console.log(error.response.data.msg)
@@ -134,6 +134,7 @@ function History() {
           color="#0000ff"
         />
       ) : (
+        // ) : history.length > 0 ? (
         <ScrollView style={{paddingLeft: 25, paddingRight: 25}}>
           <View style={{paddingLeft: 10}}>
             {history.map(e => (
@@ -147,6 +148,9 @@ function History() {
             ))}
           </View>
         </ScrollView>
+        // ) : (
+        //   'History Not Available'
+        // )}
       )}
 
       {/* {history?.map(e => {

@@ -21,6 +21,8 @@ import privacy from '../assets/drawer/privacy.png';
 import security from '../assets/drawer/security.png';
 import logouts from '../assets/drawer/logouts.png';
 import menu from '../assets/drawer/menu.png';
+import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
   View,
@@ -38,35 +40,79 @@ import DefaultImg from '../assets/images/default-img.png';
 import {useNavigation} from '@react-navigation/native';
 import Profile from '../screens/profile/Index';
 
-import {useDispatch, useSelector} from 'react-redux';
 // import userAction from '../redux/actions/user';
 // import authAction from '../redux/actions/auth';
+
+import authAction from '../redux/actions/auth';
+import axios from 'axios';
 
 function Navbar({children}) {
   const navigation = useNavigation();
   const {height, width} = useWindowDimensions();
   const [modalVisible, setModalVisible] = useState(false);
-
-  const profile = useSelector(state => state.auth.profile);
+  const dispatch = useDispatch();
+  // const profile = useSelector(state => state.auth.profile);
+  const [profile, setProfile] = useState('');
   const toProfile = () => {
     navigation.navigate('Profile');
   };
   const toHistory = () => {
     navigation.navigate('History');
   };
+  const Logout = async () => {
+    const deletetoken = await AsyncStorage.removeItem('token');
+    try {
+      // const getToken = AsyncStorage.getItem('token');
+      // console.log(getToken);
+      // dispatch(authAction.logoutThunk(getToken));
+      deletetoken;
+      ToastAndroid.showWithGravity(
+        'Logout Success',
+        ToastAndroid.LONG,
+        ToastAndroid.TOP,
+      ),
+        navigation.navigate('Home');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getProfileUser = async () => {
+    const token = await AsyncStorage.getItem('token');
+    axios
+      .get(`https://coffee-gayoe.vercel.app/api/v1/users/profile`, {
+        headers: {'x-access-token': token},
+      })
+      .then(res => {
+        setProfile(res.data.result.result[0]);
+        // console.log(res.data.result.result[0]);
+        // console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    getProfileUser();
+  }, []);
   const renderDrawer = () => {
     // navigation = useNavigation();
+
     return (
       <View>
         <View style={styles.continerSwipe}>
-          <Image
-            source={profile.image === null ? DefaultImg : {uri: profile.image}}
-            style={styles.imageDrawer}
-          />
-          {/* <Text style={styles.username}>username</Text> */}
-          <Text style={styles.username}>{profile.display_name}</Text>
-          {/* <Text style={styles.email}>email.com</Text> */}
-          <Text style={styles.email}>{profile.email}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <Image
+              source={
+                profile.image === null ? DefaultImg : {uri: profile.image}
+              }
+              style={styles.imageDrawer}
+            />
+            {/* <Text style={styles.username}>username</Text> */}
+            <Text style={styles.username}>{profile.display_name}</Text>
+            {/* <Text style={styles.email}>email.com</Text> */}
+            <Text style={styles.email}>{profile.email}</Text>
+          </TouchableOpacity>
         </View>
         <View
           style={{
@@ -82,20 +128,22 @@ function Navbar({children}) {
                     <Icons name={"user-circle"} size={20} style={styles.imageBottom} label="Close drawer"
                     onPress={() => props.navigation.closeDrawer()}/>
                 </DrawerItem> */}
-            <Pressable
-              style={styles.containerBottom}
+
+            <TouchableOpacity
+              style={styles.div}
               onPress={() => navigation.navigate('Profile')}>
-              {/* <Pressable style={styles.containerBottom} onPress={toProfile}> */}
-              {/* <Image source={IconUser} style={styles.imageBottom}/> */}
               <Image source={Icon} size={60} style={styles.imageBottom} />
               <Text style={styles.textBottom}>Edit Profile</Text>
-            </Pressable>
+            </TouchableOpacity>
+
             <Divider style={{width: '90%', margin: 3}} />
-            <Pressable style={styles.containerBottom} onPress={toHistory}>
+            <TouchableOpacity
+              style={styles.containerBottom}
+              onPress={toHistory}>
               {/* <Image source={IconUser} style={styles.imageBottom}/> */}
               <Image source={Cart} size={20} style={styles.imageBottom} />
               <Text style={styles.textBottom}>Orders</Text>
-            </Pressable>
+            </TouchableOpacity>
             <Divider style={{width: '90%', margin: 3}} />
             <View style={styles.containerBottom}>
               {/* <Image source={IconMenus} style={styles.imageBottom}/> */}
@@ -133,10 +181,9 @@ function Navbar({children}) {
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Are you sure want to logout?</Text>
               <View style={{display: 'flex', flexDirection: 'row'}}>
-                {/* <Pressable style={[styles.button, styles.buttonClose]}> */}
                 <Pressable
                   style={[styles.button, styles.buttonClose]}
-                  onPress={() => navigation.navigate('Home')}>
+                  onPress={Logout}>
                   <Text style={styles.textStyle}>YES</Text>
 
                   {/* {auth.isLoading ? (
@@ -174,33 +221,24 @@ function Navbar({children}) {
               style={{width: 20, height: 20, display: 'none'}}
               onPress={() => DrawerLayout.current.openDrawer()}
             />
-            {/* <IconComunity
-              name={'gesture-swipe-right'}
-              style={{fontSize: 40, color: 'black'}}
-            /> */}
           </View>
           <View style={styles.left}>
             <Image source={Chat} style={styles.icon} />
             <Image source={Carts} style={styles.icon} />
-            {/* <Icons
-              name={'comment'}
-              style={{
-                transform: [{rotateY: '180deg'}],
-                fontSize: 25,
-                marginHorizontal: 7,
-                color: 'grey',
-              }}
-            /> */}
-            {/* <IconIon name={'search-outline'} style={styles.Icons} /> */}
-            {/* <IconIon name={'cart-outline'} style={styles.Icons} /> */}
-            <Image
-              source={
-                profile.image === null ? DefaultImg : {uri: profile.image}
-              }
-              style={{height: 40, width: 40, borderRadius: 100, marginLeft: 20}}
-            />
-            {/* <Icons name={'search'} size={20} style={styles.icon} /> */}
-            {/* <Icons name={'shopping-cart'} size={20} style={styles.icon} /> */}
+
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+              <Image
+                source={
+                  profile.image === null ? DefaultImg : {uri: profile.image}
+                }
+                style={{
+                  height: 40,
+                  width: 40,
+                  borderRadius: 100,
+                  marginLeft: 20,
+                }}
+              />
+            </TouchableOpacity>
           </View>
         </View>
         {children}

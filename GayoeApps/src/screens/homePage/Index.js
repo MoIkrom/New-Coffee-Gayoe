@@ -21,6 +21,8 @@ import React, {useEffect, useState} from 'react';
 import authAction from '../../redux/actions/auth';
 import {debounce} from '../../utils/debounce';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // Styles
 import styles from '../../styles/HomePage';
 
@@ -49,7 +51,9 @@ const Home = () => {
   const valueSearch = e => {
     setSearch(e);
   };
-  const debounceOnChange = debounce(valueSearch, 1000);
+  const updateChange = text => setSearch(text);
+  const debounceOnChange = debounce(updateChange, 1000);
+  // const debounceOnChange = debounce(valueSearch, 1000);
   // link active
   const navActive1 = () => {
     setNavFav(false),
@@ -100,7 +104,7 @@ const Home = () => {
       setNavCoff(true),
       setNavNonCoff(false),
       setNavadd(true),
-      setCategory('Non Coffee');
+      setCategory('Non-Coffee');
     setSort();
     setSearch(search);
   };
@@ -111,11 +115,10 @@ const Home = () => {
       setNavCoff(true),
       setNavNonCoff(true),
       setNavadd(false),
-      setCategory('Add On'),
+      setCategory('Add-On'),
       setSort();
     setSearch(search);
   };
-
   useEffect(() => {
     setLoading(true);
     axios
@@ -172,11 +175,9 @@ const Home = () => {
               <Image source={search} style={styles.Icons} />
               <TextInput
                 style={styles.textPlaceholder}
-                placeholder="🔍 Search"
+                placeholder=" Search Product Here "
                 placeholderTextColor="grey"
-                // onChangeText={valueSearch}
                 onChangeText={debounceOnChange}
-                value={search}
               />
             </View>
             <View style={styles.categorys}>
@@ -238,24 +239,26 @@ const Home = () => {
                 ? 'Coffee'
                 : category === 'favorite'
                 ? 'Favorite'
-                : category === 'Non Coffee'
+                : category === 'Non-Coffee'
                 ? 'Non Coffee'
                 : category === 'Food'
                 ? 'Foods'
-                : category === 'Add On'
+                : category === 'Add-On'
                 ? 'Add on'
                 : 'All'}
             </Text>
-            <Text
-              style={styles.see}
-              onPress={() => {
-                navigation.navigate('AllProduct', {
-                  category: category,
-                  sort: sort,
-                });
-              }}>
-              See more
-            </Text>
+            <Pressable>
+              <Text
+                style={styles.see}
+                onPress={() => {
+                  navigation.navigate('AllProduct', {
+                    category: category,
+                    sort: sort,
+                  });
+                }}>
+                See more
+              </Text>
+            </Pressable>
             <ScrollView
               // showsHorizontalScrollIndicator={false}
               horizontal={true}

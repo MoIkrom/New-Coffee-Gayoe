@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
+  div: {display: 'flex', flexDirection: 'row'},
   icon: {
     marginHorizontal: 15,
     height: 30,
@@ -80,6 +81,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     color: 'grey',
   },
+
+  // Start Modal
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -101,6 +104,20 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  modalText: {
+    fontFamily: 'Poppins-Bold',
+    width: 200,
+    color: 'black',
+    fontSize: 25,
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
   button: {
     borderRadius: 20,
     width: 100,
@@ -111,19 +128,8 @@ const styles = StyleSheet.create({
   buttonClose: {
     backgroundColor: '#6A4029',
   },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    fontFamily: 'Poppins-Bold',
-    width: 200,
-    color: 'black',
-    fontSize: 25,
-    marginBottom: 15,
-    textAlign: 'center',
-  },
+
+  // End Modal
 });
 
 export default styles;

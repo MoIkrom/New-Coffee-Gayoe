@@ -12,6 +12,8 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
   },
+  contaddres: {marginBottom: 50},
+  icons: {position: 'relative', top: 25.3, left: 23},
   img_bar: {
     alignItems: 'center',
     flex: 1,
@@ -46,14 +48,15 @@ const styles = StyleSheet.create({
     height: 50,
   },
   Text_input: {
-    paddingTop: 13,
+    // paddingTop: 0,
+    paddingBottom: 5,
     borderBottomWidth: 1,
     fontSize: 17,
     borderBottomColor: '#9F9F9F',
     fontFamily: 'Poppins',
     color: 'black',
     maxWidth: '100%',
-    height: 50,
+    height: 25,
   },
   form: {
     textAlign: 'left',

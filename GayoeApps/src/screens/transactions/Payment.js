@@ -35,7 +35,7 @@ function Payment() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [value, setValue] = useState('Card');
-  const [statusPaid, setStatusPaid] = useState('paid');
+  const [statusPaid, setStatusPaid] = useState('Paid');
   const [loading, setLoading] = useState(false);
 
   const handleRemoveRedux = () => {
@@ -65,9 +65,9 @@ function Payment() {
 
   const handleTransactions = async () => {
     try {
-      if (value === 'Bank') setStatusPaid('paid');
-      if (value === 'Card') setStatusPaid('paid');
-      if (value === 'Cash On Delivery') setStatusPaid('pending');
+      if (value === 'Bank') setStatusPaid('Paid');
+      if (value === 'Card') setStatusPaid('Paid');
+      if (value === 'Cash On Delivery') setStatusPaid('Pending');
       setLoading(true);
       const getToken = await AsyncStorage.getItem('token');
       console.log(value);
@@ -174,6 +174,7 @@ function Payment() {
                 }
                 onPress={() => {
                   setValue('Card');
+                  setStatusPaid('Paid');
                 }}>
                 <View
                   style={
@@ -188,6 +189,7 @@ function Payment() {
                 }
                 onPress={() => {
                   setValue('Bank');
+                  setStatusPaid('Paid');
                 }}>
                 <View
                   style={
@@ -204,6 +206,7 @@ function Payment() {
                 }
                 onPress={() => {
                   setValue('Cash On Delivery');
+                  setStatusPaid('Pending');
                 }}>
                 <View
                   style={
