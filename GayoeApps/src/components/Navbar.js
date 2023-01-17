@@ -53,8 +53,10 @@ function Navbar({children}) {
   const dispatch = useDispatch();
   // const profile = useSelector(state => state.auth.profile);
   const [profile, setProfile] = useState('');
+  const [roles, setRoles] = useState('');
+  const [tokens, setTokens] = useState('');
   const toProfile = () => {
-    navigation.navigate('Profile');
+    navigation.replace('Profile');
   };
   const toHistory = () => {
     navigation.navigate('History');
@@ -62,9 +64,6 @@ function Navbar({children}) {
   const Logout = async () => {
     const deletetoken = await AsyncStorage.removeItem('token');
     try {
-      // const getToken = AsyncStorage.getItem('token');
-      // console.log(getToken);
-      // dispatch(authAction.logoutThunk(getToken));
       deletetoken;
       ToastAndroid.showWithGravity(
         'Logout Success',
@@ -84,24 +83,30 @@ function Navbar({children}) {
       })
       .then(res => {
         setProfile(res.data.result.result[0]);
-        // console.log(res.data.result.result[0]);
-        // console.log(res);
       })
       .catch(err => {
         console.log(err);
       });
   };
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const role = await AsyncStorage.getItem('role');
+    setRoles(role);
+    setTokens(token);
+  };
 
   useEffect(() => {
     getProfileUser();
+    getToken();
   }, []);
   const renderDrawer = () => {
     // navigation = useNavigation();
 
     return (
       <View>
-        <View style={styles.continerSwipe}>
-          <TouchableOpacity onPress={() => navigation.replace('Profile')}>
+        <View
+          style={roles === 'admin' ? {display: 'none'} : styles.continerSwipe}>
+          <TouchableOpacity onPress={toProfile}>
             <Image
               source={
                 profile.image === null ? DefaultImg : {uri: profile.image}

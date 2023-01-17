@@ -45,13 +45,14 @@ const Home = () => {
   const [product, setProduct] = useState([]);
   const [notfound, setNotfound] = useState('');
   const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState('');
+  const [tokens, setTokens] = useState('');
 
   const valueSearch = e => {
     setSearch(e);
   };
   const updateChange = text => setSearch(text);
   const debounceOnChange = debounce(updateChange, 1000);
-  // const debounceOnChange = debounce(valueSearch, 1000);
   // link active
   const navActive1 = () => {
     setNavFav(false),
@@ -119,7 +120,9 @@ const Home = () => {
   };
   const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
-    if (token === null) navigation.replace('Login');
+    const role = await AsyncStorage.getItem('role');
+    setRoles(role);
+    setTokens(token);
   };
   useEffect(() => {
     getToken();
@@ -166,140 +169,147 @@ const Home = () => {
 
   return (
     <View style={styles.sectionContainer}>
-      <Navbar>
-        <ScrollView>
-          <View style={styles.container}>
-            <Text style={styles.title}>A good coffee is a good day</Text>
-            <View style={styles.wrapperSearch}>
-              {/* <FontAwesome icon={SolidIcons.search} style={styles.iconSearch} /> */}
-              <Image source={search} style={styles.Icons} />
-              <TextInput
-                style={styles.textPlaceholder}
-                placeholder=" Search Product Here "
-                placeholderTextColor="grey"
-                onChangeText={debounceOnChange}
-              />
-            </View>
-            <View style={styles.categorys}>
-              <TouchableOpacity>
-                <Text
-                  style={navFav ? styles.categorys : styles.nav_product_black}
-                  onPress={navActive1}>
-                  Favorite
-                </Text>
-              </TouchableOpacity>
-              {/* <TouchableOpacity>
+      {tokens === null ? (
+        navigation.replace('Login')
+      ) : (
+        <Navbar>
+          <ScrollView>
+            <View style={styles.container}>
+              <Text style={styles.title}>A good coffee is a good day</Text>
+              <View style={styles.wrapperSearch}>
+                {/* <FontAwesome icon={SolidIcons.search} style={styles.iconSearch} /> */}
+                <Image source={search} style={styles.Icons} />
+                <TextInput
+                  style={styles.textPlaceholder}
+                  placeholder=" Search Product Here "
+                  placeholderTextColor="grey"
+                  onChangeText={debounceOnChange}
+                />
+              </View>
+              <View style={styles.categorys}>
+                <TouchableOpacity>
+                  <Text
+                    style={navFav ? styles.categorys : styles.nav_product_black}
+                    onPress={navActive1}>
+                    Favorite
+                  </Text>
+                </TouchableOpacity>
+                {/* <TouchableOpacity>
                 <Text
                   style={navPromo ? styles.categorys : styles.nav_product_black}
                   onPress={navActive2}>
                   Promo
                 </Text>
               </TouchableOpacity> */}
-              <TouchableOpacity>
-                <Text
-                  style={navFood ? styles.categorys : styles.nav_product_black}
-                  onPress={navActive3}>
-                  Food
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text
-                  style={navCoff ? styles.categorys : styles.nav_product_black}
-                  onPress={navActive4}>
-                  Coffee
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text
-                  style={
-                    navNonCoff ? styles.categorys : styles.nav_product_black
-                  }
-                  onPress={navActive5}>
-                  Non-Coffee
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text
-                  style={navadd ? styles.categorys : styles.nav_product_black}
-                  onPress={navActive6}>
-                  Add-On
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity>
+                  <Text
+                    style={
+                      navFood ? styles.categorys : styles.nav_product_black
+                    }
+                    onPress={navActive3}>
+                    Food
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Text
+                    style={
+                      navCoff ? styles.categorys : styles.nav_product_black
+                    }
+                    onPress={navActive4}>
+                    Coffee
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Text
+                    style={
+                      navNonCoff ? styles.categorys : styles.nav_product_black
+                    }
+                    onPress={navActive5}>
+                    Non-Coffee
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Text
+                    style={navadd ? styles.categorys : styles.nav_product_black}
+                    onPress={navActive6}>
+                    Add-On
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          <ScrollView style={styles.container}>
-            <Text
-              style={styles.category}
-              // onPress={() => {
-              //   navigation.navigate('ProductsDetails');
-              // }}
-            >
-              {/* Coffee */}
-              {category === 'Coffee'
-                ? 'Coffee'
-                : category === 'favorite'
-                ? 'Favorite'
-                : category === 'Non-Coffee'
-                ? 'Non Coffee'
-                : category === 'Food'
-                ? 'Foods'
-                : category === 'Add-On'
-                ? 'Add on'
-                : 'All'}
-            </Text>
-            <Pressable>
+            <ScrollView style={styles.container}>
               <Text
-                style={styles.see}
-                onPress={() => {
-                  navigation.navigate('AllProduct', {
-                    category: category,
-                    sort: sort,
-                  });
-                }}>
-                See more
+                style={styles.category}
+                // onPress={() => {
+                //   navigation.navigate('ProductsDetails');
+                // }}
+              >
+                {/* Coffee */}
+                {category === 'Coffee'
+                  ? 'Coffee'
+                  : category === 'favorite'
+                  ? 'Favorite'
+                  : category === 'Non-Coffee'
+                  ? 'Non Coffee'
+                  : category === 'Food'
+                  ? 'Foods'
+                  : category === 'Add-On'
+                  ? 'Add on'
+                  : 'All'}
               </Text>
-            </Pressable>
-            <ScrollView
-              // showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              keyboardShouldPersistTaps={'always'}
-              // style={{height: height / 2}}
-            >
-              {notfound === 'Internal server Error' ? (
+              <Pressable>
                 <Text
-                  style={{
-                    paddingHorizontal: 100,
-                    paddingTop: 100,
-                    fontSize: 25,
+                  style={styles.see}
+                  onPress={() => {
+                    navigation.navigate('AllProduct', {
+                      category: category,
+                      sort: sort,
+                    });
                   }}>
-                  Product Not Found{' '}
+                  See more
                 </Text>
-              ) : loading ? (
-                <ActivityIndicator
-                  style={{
-                    paddingHorizontal: 160,
-                    paddingTop: 150,
-                  }}
-                  size="large"
-                  color="#0000ff"
-                />
-              ) : (
-                product.map((e, idx) => (
-                  <Card
-                    // name={'Juz Alvokat'}
-                    // price={10000}
-                    // img={Sample}
-                    name={e.product_name}
-                    price={e.price}
-                    img={e.image}
-                    id={e.id}
-                    key={idx}
+              </Pressable>
+              <ScrollView
+                // showsHorizontalScrollIndicator={false}
+                horizontal={true}
+                keyboardShouldPersistTaps={'always'}
+                // style={{height: height / 2}}
+              >
+                {notfound === 'Internal server Error' ? (
+                  <Text
+                    style={{
+                      paddingHorizontal: 100,
+                      paddingTop: 100,
+                      fontSize: 25,
+                    }}>
+                    Product Not Found{' '}
+                  </Text>
+                ) : loading ? (
+                  <ActivityIndicator
+                    style={{
+                      paddingHorizontal: 160,
+                      paddingTop: 150,
+                    }}
+                    size="large"
+                    color="#0000ff"
                   />
-                ))
-              )}
-            </ScrollView>
+                ) : (
+                  product.map((e, idx) => (
+                    <Card
+                      // name={'Juz Alvokat'}
+                      // price={10000}
+                      // img={Sample}
+                      name={e.product_name}
+                      price={e.price}
+                      img={e.image}
+                      id={e.id}
+                      key={idx}
+                    />
+                  ))
+                )}
+              </ScrollView>
 
-            {/* <Text style={styles.category}>Food</Text>
+              {/* <Text style={styles.category}>Food</Text>
           <Text
             style={styles.see}
             onPress={() => {
@@ -357,9 +367,52 @@ const Home = () => {
               </View>
             </Pressable>
           </ScrollView> */}
+            </ScrollView>
+            {roles === 'admin' ? (
+              <View
+                style={
+                  loading
+                    ? {display: 'none'}
+                    : {
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginVertical: 50,
+                      }
+                }>
+                <TouchableOpacity
+                  style={styles.btnadd}
+                  onPress={() => {
+                    navigation.navigate('AddProduct');
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontWeight: 'bold',
+                      fontSize: 20,
+                      color: '#6A4029',
+                    }}>
+                    Add Product
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnadd}>
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontWeight: 'bold',
+                      fontSize: 20,
+                      color: '#6A4029',
+                    }}>
+                    Add Promo
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              ''
+            )}
           </ScrollView>
-        </ScrollView>
-      </Navbar>
+        </Navbar>
+      )}
     </View>
   );
 };

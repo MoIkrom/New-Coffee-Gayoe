@@ -27,6 +27,8 @@ import back from '../../assets/images/back.png';
 import cart from '../../assets/images/shopping-cart.png';
 import {onBackPress} from '../../utils/backpress';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // import transactionActions from '../../redux/actions/transaction';
 // import axios from 'axios';
 
@@ -38,6 +40,7 @@ function ProductDetail({route}) {
   const [product, setProduct] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+  const [roles, setRoles] = useState('');
   const [size, setSize] = useState('R');
   const [modalVisible, setModalVisible] = useState(false);
   const handleBackPress = () => {
@@ -56,8 +59,13 @@ function ProductDetail({route}) {
         console.log(err.response.data.msg);
       });
   };
+  const getRoles = async () => {
+    const role = await AsyncStorage.getItem('role');
+    setRoles(role);
+  };
   useEffect(() => {
     getProductByid();
+    getRoles();
     onBackPress(handleBackPress);
   }, []);
 
@@ -150,13 +158,21 @@ function ProductDetail({route}) {
               </Text>
             </Text>
             <Text style={styles.description}>{product.description}</Text>
-            <Text style={styles.sizeText}> Choose a size</Text>
+            <Text
+              style={roles === 'admin' ? {display: 'none'} : styles.sizeText}>
+              {' '}
+              Choose a size
+            </Text>
             <View
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                flexDirection: 'row',
-              }}>
+              style={
+                roles === 'admin'
+                  ? {display: 'none'}
+                  : {
+                      display: 'flex',
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                    }
+              }>
               <Pressable
                 style={size === 'R' ? styles.selected : styles.button}
                 onPress={() => {
@@ -194,10 +210,13 @@ function ProductDetail({route}) {
                 </Text>
               </Pressable>
             </View>
-            <View style={{width: width, paddingBottom: 30}}>
-              {/* <ButtonCustom text={"Add to cart"} textColor={"white"} color={"#6A4029"}/> */}
+            <View
+              style={
+                roles === 'admin'
+                  ? {display: 'none'}
+                  : {width: width, paddingBottom: 10}
+              }>
               <TouchableOpacity activeOpacity={0.8} onPress={handleRedux}>
-                {/* <TouchableOpacity onPress={addCart} activeOpacity={0.8}> */}
                 <View
                   style={{
                     backgroundColor: '#6A4029',
@@ -219,6 +238,31 @@ function ProductDetail({route}) {
                 </View>
               </TouchableOpacity>
             </View>
+            <View style={{width: width, paddingTop: 150}}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => console.log('masukChoy')}>
+                <View
+                  style={{
+                    backgroundColor: '#6A4029',
+                    height: 70,
+                    width: width / 1.2,
+                    borderRadius: 20,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontFamily: 'Poppins-Bold',
+                      fontSize: 17,
+                      fontWeight: 'bold',
+                    }}>
+                    Edit Product
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
             <Modal
               visible={modalVisible}
               transparent={true}
@@ -231,21 +275,6 @@ function ProductDetail({route}) {
                     Are you want to continue transaction?
                   </Text>
                   <View style={{display: 'flex', flexDirection: 'row'}}>
-                    {/* <Pressable
-                    onPress={() => {
-                      addCart();
-                      setModalVisible(false);
-                      return ToastAndroid.showWithGravityAndOffset(
-                        `Added Product To Cart`,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.TOP,
-                        25,
-                        50,
-                      );
-                    }}
-                    style={[styles.buttonModal, styles.buttonClose]}>
-                    <Text style={styles.textStyle}>Continue</Text>
-                  </Pressable> */}
                     <Pressable
                       style={[styles.buttonModal, styles.buttonClose]}
                       onPress={() => setModalVisible(!modalVisible)}>

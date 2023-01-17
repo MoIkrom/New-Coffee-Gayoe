@@ -16,6 +16,7 @@ import ProductDetail from './src/screens/products/ProductsDetail';
 import Profile from './src/screens/profile/Index';
 import Editprofile from './src/screens/profile/Editprofile';
 import AllProduct from './src/screens/products/AllProduct';
+import AddProduct from './src/screens/products/AddProduct';
 import Cart from './src/screens/transactions/Cart';
 import Checkout from './src/screens/transactions/Checkout';
 import Payment from './src/screens/transactions/Payment';
@@ -70,6 +71,11 @@ function App() {
         <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="AddProduct"
+          component={AddProduct}
           options={{headerShown: false}}
         />
         <Stack.Screen

@@ -312,7 +312,7 @@ const EditProfile = () => {
                         fontWeight: 'bold',
                       }
                 }>
-                {!edit ? 'Edit Data' : 'Save Edit'}
+                {!edit ? 'Edit Data' : 'Save Data'}
               </Text>
             </TouchableOpacity>
             {/* <TouchableOpacity

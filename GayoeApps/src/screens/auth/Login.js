@@ -32,13 +32,8 @@ import {onBackPress} from '../../utils/backpress';
 const Login = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const auth = useSelector(state => state.auth);
-  // console.log(auth.userData)
   const [isPwdShown, setIsPwdShown] = useState(true);
-  // const [form, setForm] = useState({
-  //   email: '',
-  //   password: '',
-  // });
+
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
@@ -53,17 +48,11 @@ const Login = () => {
     setIsPwdShown(!isPwdShown);
   };
 
-  // const onChangeHandler = (text, type) => {
-  //   setForm(form => ({...form, [type]: text}));
-  // };
-
   const handleSubmit = e => {
     const data = {
       email,
       password,
     };
-    // login(data)
-
     axios
       .post(`https://coffee-gayoe.vercel.app/api/v1/auth`, data)
       .then(res => {
@@ -74,7 +63,7 @@ const Login = () => {
           ToastAndroid.LONG,
           ToastAndroid.TOP,
         ),
-          navigation.navigate('HomePage');
+          navigation.replace('HomePage');
       })
       .catch(err => {
         console.log(err);

@@ -125,6 +125,18 @@ const styles = StyleSheet.create({
     position: 'relative',
     top: -8,
   },
+
+  // Admin Page
+  btnadd: {
+    backgroundColor: '#f5c361',
+    height: 60,
+    width: 200,
+    borderRadius: 10,
+    marginBottom: 10,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default styles;
