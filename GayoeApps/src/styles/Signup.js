@@ -71,11 +71,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     alignItems: 'center',
     // padding: 20,
-    borderRadius: 10,
+    // borderRadius: 10,
     justifyContent: 'center',
     // marginHorizontal: 31,
     // marginTop: 25,
-    fontSize: 17,
+    // fontSize: 17,
   },
 
   wrapperPwd: {

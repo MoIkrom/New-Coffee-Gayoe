@@ -12,11 +12,6 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import styles from '../../styles/EditProfile';
-// import img_product from '../../assets/images/product.png';
-import DefaultImg from '../../assets/images/default-img.png';
-// import {NativeBaseProvider, Radio, Stack} from 'native-base';
-import Pencil from 'react-native-vector-icons/Octicons';
-// import Close from 'react-native-vector-icons/AntDesign';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authActions from '../../redux/actions/auth';
@@ -25,127 +20,34 @@ import ButtonOpacity from '../../components/ButtonOpacity';
 import {onBackPress} from '../../utils/backpress';
 import {editProfile} from '../../utils/api';
 import {useNavigation} from '@react-navigation/native';
-import bg from '../../assets/images/brown.png';
-import pencil from '../../assets/images/pencil.png';
+import eye from '../../assets/images/eye2.png';
+import eyeoff from '../../assets/images/eyeslash2.png';
 
 const EditProfile = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const back = require('../../assets/images/iconBack.png');
-  // const [birthday, setBirthday] = useState(profile.birthday);
-  // const [gender, setGender] = useState(profile.gender);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [filePath, setFilePath] = useState('');
-  const [address, setAddress] = useState('');
-  const [editPhoto, setEditPhoto] = useState(false);
-  const [show, setShow] = useState(false);
-  const [image, setImage] = useState('');
-  const [edit, setEdit] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [profile, setProfile] = useState('');
+  const [isPwdShown, setIsPwdShown] = useState(true);
+  const [isPwdShown2, setIsPwdShown2] = useState(true);
+  const [old_password, SetOld_Password] = useState('');
+  const [new_password, SetNew_Password] = useState('');
 
-  const getProfile = async () => {
-    const token = await AsyncStorage.getItem('token');
-    setLoading(true);
-    axios
-      .get(`https://coffee-gayoe.vercel.app/api/v1/users/profile`, {
-        headers: {'x-access-token': token},
-      })
-      .then(res => {
-        setProfile(res.data.result.result[0]);
-        setFilePath(res.data.result.result[0].image);
-        setFirstName(res.data.result.result[0].firstname);
-        setLastName(res.data.result.result[0].lastname);
-        setDisplayName(res.data.result.result[0].display_name);
-        setAddress(res.data.result.result[0].addres);
-
-        setLoading(false);
-        console.log(profile);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
   const handleBackPress = () => {
     navigation.navigate('Profile');
     return true;
   };
+  const tooglePassword = () => {
+    setIsPwdShown(!isPwdShown);
+  };
+  const tooglePassword2 = () => {
+    setIsPwdShown2(!isPwdShown2);
+  };
   useEffect(() => {
     onBackPress(handleBackPress);
-    getProfile();
   }, []);
 
-  const dateHandle = (event, value) => {
-    setBirthday(
-      value.getFullYear() + '/' + value.getMonth() + '/' + value.getDate(),
-    );
-    setShow(false);
-  };
-
-  const showMode = () => {
-    setShow(true);
-  };
-
-  const camera = () => {
-    const option = {
-      mediaType: 'photo',
-      quality: 0.7,
-    };
-
-    launchCamera(option, res => {
-      if (res.didCancel) {
-        ToastAndroid.showWithGravity(
-          'Cancel Gallery',
-          ToastAndroid.LONG,
-          ToastAndroid.TOP,
-        );
-      } else if (res.errorCode) {
-        ToastAndroid.showWithGravity(
-          'Allow Permission',
-          ToastAndroid.LONG,
-          ToastAndroid.TOP,
-        );
-      } else {
-        const data = res.assets[0];
-        // console.log(res.assets[0]);
-        setFilePath(data.uri);
-        setImage(res.assets);
-        setEditPhoto(false);
-      }
-    });
-  };
-
-  const handlelaunchImageLibrary = () => {
-    const option = {
-      mediaType: 'photo',
-      quality: 1,
-    };
-
-    launchImageLibrary(option, res => {
-      if (res.didCancel) {
-        ToastAndroid.showWithGravity(
-          'Cancel Gallery',
-          ToastAndroid.LONG,
-          ToastAndroid.TOP,
-        );
-      } else if (res.errorCode) {
-        ToastAndroid.showWithGravity(
-          'Allow Permission',
-          ToastAndroid.LONG,
-          ToastAndroid.TOP,
-        );
-      } else {
-        const data = res.assets[0];
-        setFilePath(data.uri);
-        setImage(res.assets);
-        setEditPhoto(false);
-      }
-    });
-  };
-
-  const saveHandle = async () => {
+  const saveHandles = async () => {
     try {
       setLoading(true);
       const getToken = await AsyncStorage.getItem('token');
@@ -153,15 +55,7 @@ const EditProfile = () => {
       if (firstName) formData.append('firstname', firstName);
       if (lastName) formData.append('lastname', lastName);
       if (displayName) formData.append('display_name', displayName);
-      // if (gender) formData.append('gender', gender);
-      // if (birthday) formData.append('birthday', birthday);
       if (address) formData.append('addres', address);
-      if (image)
-        formData.append('image', {
-          name: image[0].fileName,
-          type: image[0].type,
-          uri: image[0].uri,
-        });
 
       await editProfile(getToken, formData);
       ToastAndroid.showWithGravity(
@@ -169,10 +63,45 @@ const EditProfile = () => {
         ToastAndroid.LONG,
         ToastAndroid.TOP,
       );
-      // console.log(filePath);
-      // dispatch(authActions.userIDThunk(getToken, formData));
-      // setDeps(Math.floor(Math.random() * 100000));
+
       navigation.push('Profile');
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(true);
+      ToastAndroid.showWithGravity(
+        error.response,
+        ToastAndroid.LONG,
+        ToastAndroid.TOP,
+      );
+      setLoading(false);
+    }
+  };
+
+  const handleNewPwd = text => {
+    SetNew_Password(text);
+  };
+  const handleOldPwd = text => {
+    SetOld_Password(text);
+  };
+  const saveHandle = async () => {
+    try {
+      setLoading(true);
+      const getToken = await AsyncStorage.getItem('token');
+      axios.patch(
+        `https://coffee-gayoe.vercel.app/api/v1/users/editpassword`,
+        {
+          old_password,
+          new_password,
+        },
+        {headers: {'x-access-token': getToken}},
+      );
+      ToastAndroid.showWithGravity(
+        'Success Edit Password',
+        ToastAndroid.LONG,
+        ToastAndroid.TOP,
+      );
+      navigation.replace('Profile');
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -209,104 +138,90 @@ const EditProfile = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.container}>
+      <View style={styles.container2}>
+        <Text
+          style={{
+            fontSize: 25,
+            marginBottom: 20,
+            fontWeight: 'bold',
+            textDecorationLine: 'underline',
+            fontFamily: 'Poppins',
+            color: 'black',
+          }}>
+          EDIT PASSWORD
+        </Text>
         {/* form input */}
-        <View style={styles.form}>
+        <View style={styles.form2}>
           <View style={styles.input_bar}>
-            <Text style={styles.label}>First Name :</Text>
-            {!edit ? (
-              <Text style={styles.Text_input}>
-                {firstName !== null ? `${firstName}` : `First Name`}
-              </Text>
-            ) : (
+            <Text style={styles.label2}>Old Password :</Text>
+            <View style={styles.wrapperPwd}>
               <TextInput
-                style={styles.input}
-                placeholder="Input First Name"
+                style={styles.inputPwd}
+                placeholder="Enter your old Password "
                 placeholderTextColor="#9F9F9F"
-                value={firstName}
-                onChangeText={text => setFirstName(text)}
+                keyboardType="password"
+                onChangeText={handleOldPwd}
+                secureTextEntry={isPwdShown}
               />
-            )}
-            <Text style={styles.label}>Last Name :</Text>
-            {!edit ? (
-              <Text style={styles.Text_input}>
-                {lastName !== null ? `${lastName}` : `Last Name`}
-              </Text>
-            ) : (
+              <Pressable onPress={tooglePassword}>
+                <Image
+                  source={isPwdShown ? eye : eyeoff}
+                  style={styles.iconPwd}
+                />
+              </Pressable>
+            </View>
+            <Text style={styles.label2}>New Password :</Text>
+            <View style={styles.wrapperPwd}>
               <TextInput
-                style={styles.input}
-                placeholder="Input Last Name"
+                style={styles.inputPwd}
+                secureTextEntry={isPwdShown2}
+                placeholder="Enter New Password"
                 placeholderTextColor="#9F9F9F"
-                value={lastName}
-                onChangeText={text => setLastName(text)}
+                keyboardType="password"
+                onChangeText={handleNewPwd}
               />
-            )}
-            <Text style={styles.label}>Display Name :</Text>
-            {!edit ? (
-              <Text style={styles.Text_input}>
-                {displayName !== null ? `${displayName}` : `Display Name`}
-              </Text>
-            ) : (
-              <TextInput
-                style={styles.input}
-                placeholder="input display name"
-                placeholderTextColor="#9F9F9F"
-                value={displayName}
-                onChangeText={text => setDisplayName(text)}
-              />
-            )}
-          </View>
-          <View>
-            <Text style={styles.label}>Email Adress :</Text>
-            <Text style={styles.Text_input}>{profile.email}</Text>
-          </View>
-          <View>
-            <Text style={styles.label}>Phone Number :</Text>
-            <Text style={styles.Text_input}>{profile.phone_number}</Text>
-          </View>
+              <Pressable onPress={tooglePassword2}>
+                <Image
+                  source={isPwdShown2 ? eye : eyeoff}
+                  style={styles.iconPwd}
+                />
+              </Pressable>
+            </View>
+            {/* <Text style={styles.label}>Confirm New Password :</Text> */}
 
-          <View>
-            <Text style={styles.label}>Delivery Address :</Text>
-            {!edit ? (
-              <Text style={styles.Text_input}>
-                {address !== null
-                  ? `${address}`
-                  : `you havent input your address`}
-              </Text>
-            ) : (
-              <TextInput
-                style={[styles.input, styles.contaddres]}
-                placeholder="input your delivery address"
-                placeholderTextColor="#9F9F9F"
-                value={address}
-                onChangeText={text => setAddress(text)}
-              />
-            )}
+            {/* <TextInput
+              style={styles.input}
+              placeholder="Confirm New Password"
+              placeholderTextColor="#9F9F9F"
+              // value={displayName}
+              onChangeText={handleOldPwd}
+            /> */}
           </View>
         </View>
-        {edit === true ? (
-          ''
-        ) : loading ? (
-          <View style={{marginTop: 35, marginBottom: 50}}>
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
-        ) : (
-          <ButtonOpacity
-            color={'#6a4029'}
-            text="Save Change"
-            radius={20}
-            colorText="white"
-            height={60}
-            width={`80%`}
-            marginBottom={10}
-            marginTop={20}
-            onPressHandler={{
-              onPress: () => {
-                saveHandle();
-              },
-            }}
-          />
-        )}
+
+        <ButtonOpacity
+          color={'#6a4029'}
+          text={
+            loading ? (
+              <View style={{marginTop: 35, marginBottom: 50}}>
+                <ActivityIndicator size="large" color="#FFBA33" />
+              </View>
+            ) : (
+              'Save Change'
+            )
+          }
+          radius={20}
+          colorText="white"
+          height={60}
+          width={`80%`}
+          marginBottom={10}
+          marginTop={20}
+          onPressHandler={{
+            onPress: () => {
+              saveHandle();
+            },
+          }}
+        />
       </View>
     </ScrollView>
     // </NativeBaseProvider>

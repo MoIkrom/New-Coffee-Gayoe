@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   LinearLayout,
+  Modal,
   useWindowDimensions,
   ActivityIndicator,
 } from 'react-native';
@@ -41,12 +42,13 @@ const Home = () => {
   const [navNonCoff, setNavNonCoff] = useState(true);
   const [navadd, setNavadd] = useState(true);
   const [category, setCategory] = useState('Food');
-  const [sort, setSort] = useState('name');
+  const [sort, setSort] = useState('newest');
   const [product, setProduct] = useState([]);
   const [notfound, setNotfound] = useState('');
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState('');
   const [tokens, setTokens] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
 
   const valueSearch = e => {
     setSearch(e);
@@ -62,7 +64,7 @@ const Home = () => {
       setNavNonCoff(true),
       setNavadd(true),
       setCategory(),
-      setSort('name');
+      setSort(sort);
   };
   const navActive2 = () => {
     setNavFav(true),
@@ -82,7 +84,7 @@ const Home = () => {
       setNavNonCoff(true),
       setNavadd(true),
       setCategory('Food'),
-      setSort();
+      setSort(sort);
     setSearch(search);
   };
   const navActive4 = () => {
@@ -93,7 +95,7 @@ const Home = () => {
       setNavNonCoff(true),
       setNavadd(true),
       setCategory('Coffee'),
-      setSort();
+      setSort(sort);
     setSearch(search);
   };
   const navActive5 = () => {
@@ -104,7 +106,7 @@ const Home = () => {
       setNavNonCoff(false),
       setNavadd(true),
       setCategory('Non-Coffee');
-    setSort();
+    setSort(sort);
     setSearch(search);
   };
   const navActive6 = () => {
@@ -115,7 +117,7 @@ const Home = () => {
       setNavNonCoff(true),
       setNavadd(false),
       setCategory('Add-On'),
-      setSort();
+      setSort(sort);
     setSearch(search);
   };
   const getToken = async () => {
@@ -162,22 +164,27 @@ const Home = () => {
       }),
     );
   };
+  const getTokenCheck = async () => {
+    const token = await AsyncStorage.getItem('token');
+
+    token === null ? navigation.navigate('Home') : '';
+  };
 
   useEffect(() => {
     resetReduxTransactions();
+    // getTokenCheck();
   }, []);
 
   return (
     <View style={styles.sectionContainer}>
       {tokens === null ? (
-        navigation.replace('Login')
+        navigation.replace('Home')
       ) : (
         <Navbar>
           <ScrollView>
             <View style={styles.container}>
               <Text style={styles.title}>A good coffee is a good day</Text>
               <View style={styles.wrapperSearch}>
-                {/* <FontAwesome icon={SolidIcons.search} style={styles.iconSearch} /> */}
                 <Image source={search} style={styles.Icons} />
                 <TextInput
                   style={styles.textPlaceholder}
@@ -186,6 +193,83 @@ const Home = () => {
                   onChangeText={debounceOnChange}
                 />
               </View>
+
+              {/* Start Search with Sort */}
+              {/* <View style={styles.divup}>
+                <View style={styles.wrapperSearch}>
+                  <Image source={search} style={styles.icons} />
+                  <TextInput
+                    style={styles.textPlaceholder}
+                    placeholder=" Search Product Here "
+                    placeholderTextColor="grey"
+                    onChangeText={debounceOnChange}
+                  />
+
+                 
+                </View>
+                <View style={styles.cardfilter}>
+                  <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Text style={styles.text}>Sort</Text>
+                  </TouchableOpacity>
+                </View>
+                <Modal
+                  visible={modalVisible}
+                  transparent={true}
+                  onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                  }}>
+                  <View style={styles.centeredView}>
+                    <Pressable
+                      style={[styles.buttonss, styles.buttonClosed]}
+                      onPress={() => setModalVisible(!modalVisible)}>
+                      <Text style={styles.textStyles}>X</Text>
+                    </Pressable>
+                    <View style={styles.modalView}>
+                      <Text style={styles.modalText}>Sorting By :</Text>
+                      <View
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                        }}>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            setModalVisible(!modalVisible);
+                            setSort('name');
+                          }}>
+                          <Text style={styles.textStyle}>Name</Text>
+                        </Pressable>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            setModalVisible(!modalVisible);
+                            setSort('expensive');
+                          }}>
+                          <Text style={styles.textStyle}>Pricy</Text>
+                        </Pressable>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            setModalVisible(!modalVisible);
+                            setSort('cheapest');
+                          }}>
+                          <Text style={styles.textStyle}>Cheapest</Text>
+                        </Pressable>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            setModalVisible(!modalVisible);
+                            setSort('newest');
+                          }}>
+                          <Text style={styles.textStyle}>New Product </Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
+              </View> */}
+              {/* End Search with Sort */}
+
               <View style={styles.categorys}>
                 <TouchableOpacity>
                   <Text
@@ -383,7 +467,7 @@ const Home = () => {
                 <TouchableOpacity
                   style={styles.btnadd}
                   onPress={() => {
-                    navigation.navigate('AddProduct');
+                    navigation.replace('AddProduct');
                   }}>
                   <Text
                     style={{

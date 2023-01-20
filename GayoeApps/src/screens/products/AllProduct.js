@@ -24,10 +24,11 @@ import backs from '../../assets/images/backblack.png';
 import {debounce} from '../../utils/debounce';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
+import {onBackPress} from '../../utils/backpress';
+
 function See_more({route}) {
   //   const dispatch = useDispatch();
   const navigation = useNavigation();
-  // const clearInput = React.useCallback(() => onChangeText(''), []);
   const [modalVisible, setModalVisible] = useState(false);
   const [product, setProduct] = useState([]);
   // const {category, sort} = route.params;
@@ -35,7 +36,7 @@ function See_more({route}) {
   const [loading, setLoading] = useState(true);
   const [notfound, setNotfound] = useState('');
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState('');
+  const [sort, setSort] = useState('newest');
 
   const deleteChange = text => setSearch('');
   const updateChange = text => setSearch(text);
@@ -52,7 +53,13 @@ function See_more({route}) {
   //   useEffect(() => {
   //     dispatch(productAction.getAllThunk());
   //   }, [dispatch]);
+
+  const handleBackPress = () => {
+    navigation.goBack();
+    return true;
+  };
   useEffect(() => {
+    onBackPress(handleBackPress);
     setLoading(true);
     axios
       .get(

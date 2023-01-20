@@ -13,6 +13,7 @@ import ResetPwd from './src/screens/auth/EditPassword';
 import HomePage from './src/screens/homePage/Index';
 import Drawer from './src/screens/drawer/Index';
 import ProductDetail from './src/screens/products/ProductsDetail';
+import EditProduct from './src/screens/products/EditProduct';
 import Profile from './src/screens/profile/Index';
 import Editprofile from './src/screens/profile/Editprofile';
 import AllProduct from './src/screens/products/AllProduct';
@@ -71,6 +72,11 @@ function App() {
         <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="EditProduct"
+          component={EditProduct}
           options={{headerShown: false}}
         />
         <Stack.Screen

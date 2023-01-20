@@ -12,23 +12,18 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import styles from '../../styles/EditProfile';
-// import img_product from '../../assets/images/product.png';
-import DefaultImg from '../../assets/images/default-img.png';
-// import {NativeBaseProvider, Radio, Stack} from 'native-base';
-import Pencil from 'react-native-vector-icons/Octicons';
-// import Close from 'react-native-vector-icons/AntDesign';
+import DefaultImg from '../../assets/images/foto.png';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import authActions from '../../redux/actions/auth';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import ButtonOpacity from '../../components/ButtonOpacity';
 import {onBackPress} from '../../utils/backpress';
-import {editProfile} from '../../utils/api';
+import {editProduct} from '../../utils/api';
 import {useNavigation} from '@react-navigation/native';
 import bg from '../../assets/images/brown.png';
 import pencil from '../../assets/images/pencil.png';
 
-const EditProfile = () => {
+const EditProfile = ({route}) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const back = require('../../assets/images/iconBack.png');
@@ -37,56 +32,48 @@ const EditProfile = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [filePath, setFilePath] = useState('');
   const [address, setAddress] = useState('');
   const [editPhoto, setEditPhoto] = useState(false);
   const [show, setShow] = useState(false);
-  const [image, setImage] = useState('');
   const [edit, setEdit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState('');
+  const [product, setProduct] = useState({});
+  const [productName, setProductName] = useState('');
+  const [filePath, setFilePath] = useState('');
+  const [price, setPrice] = useState('');
+  const [image, setImage] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const {id_product} = route.params;
 
-  const getProfile = async () => {
-    const token = await AsyncStorage.getItem('token');
-    setLoading(true);
+  const getProductByid = () => {
     axios
-      .get(`https://coffee-gayoe.vercel.app/api/v1/users/profile`, {
-        headers: {'x-access-token': token},
-      })
+      .get(`https://coffee-gayoe.vercel.app/api/v1/product/${id_product}`)
       .then(res => {
-        setProfile(res.data.result.result[0]);
-        setFilePath(res.data.result.result[0].image);
-        setFirstName(res.data.result.result[0].firstname);
-        setLastName(res.data.result.result[0].lastname);
-        setDisplayName(res.data.result.result[0].display_name);
-        setAddress(res.data.result.result[0].addres);
-
+        setProduct(res.data.result.data[0]);
+        setProductName(res.data.result.data[0].product_name);
+        setImage(res.data.result.result[0].image);
+        setPrice(res.data.result.result[0].price);
+        setDescription(res.data.result.result[0].description);
+        setCategory(res.data.result.result[0].category);
         setLoading(false);
-        console.log(profile);
+        console.log(res.data.result.data[0].category);
       })
+
       .catch(err => {
         console.log(err);
+        // console.log(res.data.result.data[0].category);
       });
   };
   const handleBackPress = () => {
-    navigation.navigate('Profile');
+    navigation.goBack();
     return true;
   };
   useEffect(() => {
     onBackPress(handleBackPress);
-    getProfile();
+    getProductByid();
   }, []);
-
-  const dateHandle = (event, value) => {
-    setBirthday(
-      value.getFullYear() + '/' + value.getMonth() + '/' + value.getDate(),
-    );
-    setShow(false);
-  };
-
-  const showMode = () => {
-    setShow(true);
-  };
 
   const camera = () => {
     const option = {
@@ -148,14 +135,14 @@ const EditProfile = () => {
   const saveHandle = async () => {
     try {
       setLoading(true);
+      const {id_product} = route.params;
       const getToken = await AsyncStorage.getItem('token');
       const formData = new FormData();
-      if (firstName) formData.append('firstname', firstName);
-      if (lastName) formData.append('lastname', lastName);
-      if (displayName) formData.append('display_name', displayName);
-      // if (gender) formData.append('gender', gender);
-      // if (birthday) formData.append('birthday', birthday);
-      if (address) formData.append('addres', address);
+
+      if (productName) formData.append('product_name', productName);
+      // if (price) formData.append('price', price);
+      // if (description) formData.append('description', description);
+      if (category) formData.append('category', category);
       if (image)
         formData.append('image', {
           name: image[0].fileName,
@@ -163,16 +150,18 @@ const EditProfile = () => {
           uri: image[0].uri,
         });
 
-      await editProfile(getToken, formData);
+      axios.patch(
+        `https://coffee-gayoe.vercel.app/api/v1/product/${id_product}`,
+        formData,
+        {headers: {'x-access-token': getToken}},
+      );
       ToastAndroid.showWithGravity(
-        'Success Edit Profile',
+        'Success Edit Product',
         ToastAndroid.LONG,
         ToastAndroid.TOP,
       );
-      // console.log(filePath);
-      // dispatch(authActions.userIDThunk(getToken, formData));
-      // setDeps(Math.floor(Math.random() * 100000));
-      navigation.push('Profile');
+      console.log(formData);
+      navigation.push('HomePage');
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -192,7 +181,7 @@ const EditProfile = () => {
       <View>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('Profile');
+            navigation.goBack();
           }}>
           <Image source={back} size={20} style={styles.icons} />
           <Text
@@ -213,14 +202,16 @@ const EditProfile = () => {
 
       <View style={styles.container}>
         <View style={styles.img_bar}>
-          {filePath === null ? (
+          {/* {filePath === null ? (
             <Image
-              source={profile.image !== null ? profile.image : DefaultImg}
+              source={image !== null ? image : DefaultImg}
               style={styles.img}
             />
           ) : (
             <Image source={{uri: filePath}} style={styles.img} />
-          )}
+          )} */}
+
+          <Image source={image} style={styles.img} />
 
           <View style={styles.pencil_bar}>
             {!editPhoto ? (
@@ -247,7 +238,8 @@ const EditProfile = () => {
                 <Pressable>
                   <Text
                     onPress={() => {
-                      setEditPhoto(false), setFilePath(profile.image);
+                      setEditPhoto(false);
+                      // setFilePath(image);
                     }}
                     style={{color: '#ffffff'}}>
                     Close
@@ -395,76 +387,110 @@ const EditProfile = () => {
         {/* form input */}
         <View style={styles.form}>
           <View style={styles.input_bar}>
-            <Text style={styles.label}>First Name :</Text>
+            <Text style={styles.label}>Product Name :</Text>
             {!edit ? (
               <Text style={styles.Text_input}>
-                {firstName !== null ? `${firstName}` : `First Name`}
+                {productName !== null ? `${productName}` : `Input Product Name`}
               </Text>
             ) : (
               <TextInput
                 style={styles.input}
                 placeholder="Input First Name"
                 placeholderTextColor="#9F9F9F"
-                value={firstName}
-                onChangeText={text => setFirstName(text)}
+                value={productName}
+                onChangeText={text => setProductName(text)}
               />
             )}
-            <Text style={styles.label}>Last Name :</Text>
+            {/* <Text style={styles.label}>Category :</Text>
             {!edit ? (
               <Text style={styles.Text_input}>
-                {lastName !== null ? `${lastName}` : `Last Name`}
+                {category !== null ? `${category}` : `Set Category`}
               </Text>
             ) : (
               <TextInput
                 style={styles.input}
-                placeholder="Input Last Name"
+                placeholder="Input Category Product"
                 placeholderTextColor="#9F9F9F"
-                value={lastName}
-                onChangeText={text => setLastName(text)}
+                value={category}
+                onChangeText={text => setCategory(text)}
               />
-            )}
-            <Text style={styles.label}>Display Name :</Text>
+            )} */}
+            {/* <Text style={styles.label}>Price :</Text>
             {!edit ? (
               <Text style={styles.Text_input}>
-                {displayName !== null ? `${displayName}` : `Display Name`}
+                {price !== null ? `${price}` : `Input Price`}
               </Text>
             ) : (
               <TextInput
                 style={styles.input}
                 placeholder="input display name"
                 placeholderTextColor="#9F9F9F"
-                value={displayName}
-                onChangeText={text => setDisplayName(text)}
+                value={price}
+                onChangeText={text => setPrice(text)}
+              />
+            )} */}
+          </View>
+          <View style={styles.input_bar}>
+            <Text style={styles.label}>Category :</Text>
+            {!edit ? (
+              <Text style={styles.Text_input}>{category}</Text>
+            ) : (
+              <TextInput
+                style={styles.input}
+                placeholder="Input Category"
+                placeholderTextColor="#9F9F9F"
+                value={category}
+                onChangeText={text => setCategory(text)}
               />
             )}
-          </View>
-          <View>
-            <Text style={styles.label}>Email Adress :</Text>
-            <Text style={styles.Text_input}>{profile.email}</Text>
-          </View>
-          <View>
-            <Text style={styles.label}>Phone Number :</Text>
-            <Text style={styles.Text_input}>{profile.phone_number}</Text>
-          </View>
-
-          <View>
-            <Text style={styles.label}>Delivery Address :</Text>
+            {/* <Text style={styles.label}>Category :</Text>
             {!edit ? (
               <Text style={styles.Text_input}>
-                {address !== null
-                  ? `${address}`
-                  : `you havent input your address`}
+                {category !== null ? `${category}` : `Set Category`}
+              </Text>
+            ) : (
+              <TextInput
+                style={styles.input}
+                placeholder="Input Category Product"
+                placeholderTextColor="#9F9F9F"
+                value={category}
+                onChangeText={text => setCategory(text)}
+              />
+            )} */}
+            {/* <Text style={styles.label}>Price :</Text>
+            {!edit ? (
+              <Text style={styles.Text_input}>
+                {price !== null ? `${price}` : `Input Price`}
+              </Text>
+            ) : (
+              <TextInput
+                style={styles.input}
+                placeholder="input display name"
+                placeholderTextColor="#9F9F9F"
+                value={price}
+                onChangeText={text => setPrice(text)}
+              />
+            )} */}
+          </View>
+
+          {/* <View>
+            <Text style={styles.label}>Description:</Text>
+            {!edit ? (
+              <Text style={styles.Text_input}>
+                {description !== null
+                  ? `${description}`
+                  : `Input Description Product`}
               </Text>
             ) : (
               <TextInput
                 style={[styles.input, styles.contaddres]}
-                placeholder="input your delivery address"
+                placeholder="Input Description Product"
                 placeholderTextColor="#9F9F9F"
-                value={address}
-                onChangeText={text => setAddress(text)}
+                value={description}
+                onChangeText={text => setDescription(text)}
               />
             )}
-          </View>
+          </View> */}
         </View>
         {edit === true ? (
           ''
@@ -500,3 +526,4 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
+6;

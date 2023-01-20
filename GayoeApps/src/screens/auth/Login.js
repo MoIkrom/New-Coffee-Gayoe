@@ -33,7 +33,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [isPwdShown, setIsPwdShown] = useState(true);
-
+  const [isLoading, setIsloading] = useState(false);
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
@@ -49,6 +49,7 @@ const Login = () => {
   };
 
   const handleSubmit = e => {
+    setIsloading(true);
     const data = {
       email,
       password,
@@ -58,6 +59,7 @@ const Login = () => {
       .then(res => {
         AsyncStorage.setItem('token', res.data.result.data.token);
         AsyncStorage.setItem('role', res.data.result.data.role);
+        setIsloading(false);
         ToastAndroid.showWithGravity(
           'Login Success',
           ToastAndroid.LONG,
@@ -67,8 +69,9 @@ const Login = () => {
       })
       .catch(err => {
         console.log(err);
+        setIsloading(false);
         ToastAndroid.showWithGravity(
-          err.response.data.msg,
+          'Wrong Email/Password',
           ToastAndroid.LONG,
           ToastAndroid.TOP,
         );
@@ -78,10 +81,10 @@ const Login = () => {
     const token = await AsyncStorage.getItem('token');
     if (token !== null) navigation.replace('HomePage');
   };
-  const handleBackPress = () => {
-    navigation.goBack();
-    return true;
-  };
+  // const handleBackPress = () => {
+  //   navigation.goBack();
+  //   return true;
+  // };
 
   useEffect(() => {
     getToken();
@@ -132,7 +135,7 @@ const Login = () => {
             </Text>
 
             <TouchableOpacity style={styles.createBtn} onPress={handleSubmit}>
-              {auth.isLoading ? (
+              {isLoading ? (
                 <View style={styles.btnLoading}>
                   <ActivityIndicator size="large" color="black" />
                 </View>

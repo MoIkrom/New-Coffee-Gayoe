@@ -7,6 +7,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  container2: {
+    flex: 1,
+    marginVertical: 150,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   img: {
     borderRadius: 200,
     width: 150,
@@ -31,6 +38,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     width: 50,
+  },
+  label2: {
+    color: 'black',
+    fontWeight: '700',
+    fontSize: 13,
+    marginTop: 20,
+    position: 'relative',
+    left: 25,
   },
   label: {
     color: 'black',
@@ -58,6 +73,10 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     height: 25,
   },
+  form2: {
+    textAlign: 'left',
+    width: '80%',
+  },
   form: {
     textAlign: 'left',
     width: '80%',
@@ -65,8 +84,32 @@ const styles = StyleSheet.create({
   radio_bar: {
     marginTop: 10,
   },
+  iconPwd: {
+    color: '#fff',
+    fontSize: 20,
+    width: 30,
+    height: 20,
+    position: 'relative',
+    // left: -10,
+  },
+  inputPwd: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: 'black',
+    flex: 1,
+    paddingBottom: 10,
+  },
+  wrapperPwd: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'grey',
+    marginBottom: 10,
+  },
   input_bar: {
-    marginTop: 10,
+    marginTop: 40,
     marginBottom: 20,
   },
   gender: {

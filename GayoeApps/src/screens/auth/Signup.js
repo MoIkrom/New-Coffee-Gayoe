@@ -34,6 +34,7 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone_number, setPhone_number] = useState('');
+  const [isLoading, setIsloading] = useState(false);
   const tooglePassword = () => {
     setIsPwdShown(!isPwdShown);
   };
@@ -60,10 +61,12 @@ const Signup = () => {
       phone_number,
     };
     // console.log('data beforre send : ', data);
+    setIsloading(true);
     axios
       .post(`https://coffee-gayoe.vercel.app/api/v1/users`, data)
       .then(res => {
         console.log(res);
+        setIsloading(false);
         ToastAndroid.showWithGravity(
           'Register Success',
           ToastAndroid.LONG,
@@ -191,7 +194,7 @@ const Signup = () => {
               text={'phone'}
             /> */}
             <TouchableOpacity style={styles.createBtn} onPress={handleRegister}>
-              {auth.isLoading ? (
+              {isLoading ? (
                 <View style={styles.btnLoading}>
                   <ActivityIndicator size="large" color="white" />
                 </View>

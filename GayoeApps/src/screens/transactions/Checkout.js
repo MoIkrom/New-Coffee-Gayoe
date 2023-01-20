@@ -268,7 +268,7 @@ function Checkout() {
                   fontSize: 20,
                   paddingLeft: 60,
                 }}>
-                Proceed to payment
+                Process to payment
               </Text>
             </View>
           </TouchableOpacity>

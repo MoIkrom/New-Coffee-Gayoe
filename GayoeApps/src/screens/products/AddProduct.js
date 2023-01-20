@@ -106,6 +106,7 @@ const AddProduct = () => {
     try {
       setLoading(true);
       const getToken = await AsyncStorage.getItem('token');
+      const getRole = await AsyncStorage.getItem('role');
       const formData = new FormData();
 
       if (product_name) formData.append('product_name', product_name);
@@ -119,17 +120,24 @@ const AddProduct = () => {
           uri: image[0].uri,
         });
 
-      axios.post(`https://coffee-gayoe.vercel.app/api/v1/product`, formData, {
-        headers: {'x-access-token': getToken},
-      });
+      axios.post(
+        `https://coffee-gayoe.vercel.app/api/v1/product`,
+        formData,
+        // getRole,
+        {
+          headers: {'x-access-token': getToken},
+        },
+      );
       ToastAndroid.showWithGravity(
         'Success Add Product',
         ToastAndroid.LONG,
         ToastAndroid.TOP,
       );
-      navigation.push('HomePage');
+      console.log(getToken);
+      navigation.replace('HomePage');
       setLoading(false);
     } catch (error) {
+      console.log(getToken);
       console.log(error);
       setLoading(true);
       ToastAndroid.showWithGravity(
@@ -305,14 +313,18 @@ const AddProduct = () => {
         </View>
         {edit === true ? (
           ''
-        ) : loading ? (
-          <View style={{marginTop: 35, marginBottom: 50}}>
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
         ) : (
           <ButtonOpacity
             color={'#6a4029'}
-            text="Save Change"
+            text={
+              loading ? (
+                <View style={{marginTop: 35, marginBottom: 50}}>
+                  <ActivityIndicator size="large" color="#FFBA33" />
+                </View>
+              ) : (
+                'Save Change'
+              )
+            }
             radius={20}
             colorText="white"
             height={60}

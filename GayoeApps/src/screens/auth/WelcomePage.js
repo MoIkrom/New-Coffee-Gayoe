@@ -33,7 +33,7 @@ const App = () => {
       const getToken = await AsyncStorage.getItem('token');
       getToken !== null
         ? navigation.replace('HomePage')
-        : navigation.navigate('Home');
+        : navigation.replace('Home');
     } catch (error) {
       console.log(error);
       // navigation.navigate('WelcomePage');
@@ -67,7 +67,7 @@ const App = () => {
             <TouchableOpacity
               style={styles.button}
               onPress={() => {
-                navigation.navigate('Home');
+                navigation.replace('Home');
               }}>
               <Text style={styles.text}>Get Started</Text>
             </TouchableOpacity>

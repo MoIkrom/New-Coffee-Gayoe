@@ -288,7 +288,22 @@ function Payment() {
                   fontSize: 20,
                   paddingLeft: 80,
                 }}>
-                Proceed payment
+                {loading ? (
+                  <View
+                    style={{
+                      marginHorizontal: 50,
+                    }}>
+                    <ActivityIndicator
+                      style={{
+                        marginHorizontal: 50,
+                      }}
+                      size="large"
+                      color="#FFBA33"
+                    />
+                  </View>
+                ) : (
+                  'Process payment'
+                )}
               </Text>
 
               {/* {isLoading ? (

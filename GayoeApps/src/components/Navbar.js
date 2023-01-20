@@ -51,6 +51,8 @@ function Navbar({children}) {
   const {height, width} = useWindowDimensions();
   const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
+
+  const [loadingModal, setLoadingModal] = useState(false);
   // const profile = useSelector(state => state.auth.profile);
   const [profile, setProfile] = useState('');
   const [roles, setRoles] = useState('');
@@ -62,6 +64,7 @@ function Navbar({children}) {
     navigation.navigate('History');
   };
   const Logout = async () => {
+    setLoadingModal(true);
     const deletetoken = await AsyncStorage.removeItem('token');
     try {
       deletetoken;
@@ -70,9 +73,13 @@ function Navbar({children}) {
         ToastAndroid.LONG,
         ToastAndroid.TOP,
       ),
-        navigation.navigate('Login');
+        navigation.replace('Login');
+      setModalVisible(false);
+      setLoadingModal(false);
     } catch (error) {
       console.log(error);
+
+      setLoadingModal(false);
     }
   };
   const getProfileUser = async () => {
@@ -185,24 +192,25 @@ function Navbar({children}) {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Are you sure want to logout?</Text>
-              <View style={{display: 'flex', flexDirection: 'row'}}>
-                <Pressable
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={Logout}>
-                  <Text style={styles.textStyle}>YES</Text>
-
-                  {/* {auth.isLoading ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
+              {loadingModal ? (
+                <View>
+                  <ActivityIndicator />
+                  <Text style={{marginTop: 10}}>Please Wait Loading . . .</Text>
+                </View>
+              ) : (
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={Logout}>
                     <Text style={styles.textStyle}>YES</Text>
-                  )} */}
-                </Pressable>
-                <Pressable
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={() => setModalVisible(!modalVisible)}>
-                  <Text style={styles.textStyle}>NO</Text>
-                </Pressable>
-              </View>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style={styles.textStyle}>NO</Text>
+                  </Pressable>
+                </View>
+              )}
             </View>
           </View>
         </Modal>
