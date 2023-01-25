@@ -1,6 +1,75 @@
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
+  // Start Modal
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    fontFamily: 'Poppins-Bold',
+    width: 200,
+    color: 'black',
+    fontSize: 25,
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  textStyles: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 24,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
+  button: {
+    borderRadius: 20,
+    width: 100,
+    marginHorizontal: 10,
+    padding: 10,
+    elevation: 2,
+    marginBottom: 10,
+  },
+  buttonss: {
+    borderRadius: 10,
+    width: 50,
+    padding: 10,
+    position: 'relative',
+    left: 130,
+    top: 48,
+    zIndex: 1,
+    // elevation: 2,
+  },
+  buttonClosed: {
+    backgroundColor: '#e61919',
+  },
+  buttonClose: {
+    backgroundColor: '#6A4029',
+  },
+  // End Modal
+
   container: {
     backgroundColor: '#362115',
     flex: 1,

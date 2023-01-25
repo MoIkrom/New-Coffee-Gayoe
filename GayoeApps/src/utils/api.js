@@ -68,6 +68,15 @@ export const editProfile = (token, body) => {
     },
   });
 };
+// editProduct
+export const editProduct = (token, body) => {
+  return axios.patch(`${BaseUrl}api/v1/product/${id_product}`, body, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'x-access-token': token,
+    },
+  });
+};
 
 // Axios Delete historyid
 export const deleteHistoryId = (token, id) => {
