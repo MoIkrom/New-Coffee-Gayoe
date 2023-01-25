@@ -96,13 +96,13 @@ const EditProfile = () => {
         },
         {headers: {'x-access-token': getToken}},
       );
+      setLoading(false);
       ToastAndroid.showWithGravity(
         'Success Edit Password',
         ToastAndroid.LONG,
         ToastAndroid.TOP,
       );
       navigation.replace('Profile');
-      setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(true);

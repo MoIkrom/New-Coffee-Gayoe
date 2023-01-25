@@ -68,7 +68,6 @@ function See_more({route}) {
       .then(res => {
         setProduct(res.data.data);
         setLoading(false);
-        console.log(search);
         // setProduct(res.data.result.data), console.log('data ke get');
       })
       .catch(err => {

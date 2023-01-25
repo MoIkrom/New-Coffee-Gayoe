@@ -81,14 +81,14 @@ const Login = () => {
     const token = await AsyncStorage.getItem('token');
     if (token !== null) navigation.replace('HomePage');
   };
-  // const handleBackPress = () => {
-  //   navigation.goBack();
-  //   return true;
-  // };
+  const handleBackPress = () => {
+    navigation.navigate('Home');
+    return true;
+  };
 
   useEffect(() => {
     getToken();
-    // onBackPress(handleBackPress);
+    onBackPress(handleBackPress);
   });
   return (
     <View style={styles.container}>

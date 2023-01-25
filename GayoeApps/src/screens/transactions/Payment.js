@@ -77,6 +77,7 @@ function Payment() {
         payment: value,
         status: statusPaid,
       });
+      result;
       handleRemoveRedux();
       setLoading(false);
       navigation.replace('History');

@@ -467,7 +467,7 @@ const Home = () => {
                 <TouchableOpacity
                   style={styles.btnadd}
                   onPress={() => {
-                    navigation.replace('AddProduct');
+                    navigation.navigate('AddProduct');
                   }}>
                   <Text
                     style={{
