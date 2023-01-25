@@ -148,7 +148,7 @@ function ProductDetail({route}) {
             paddingTop: 250,
           }}
           size="large"
-          color="#0000ff"
+          color="#FFBA33"
         />
       ) : (
         <View style={styles.main}>

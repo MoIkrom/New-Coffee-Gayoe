@@ -235,7 +235,7 @@ function See_more({route}) {
                     price={e.price}
                     img={e.image}
                     id={e.id}
-                    key={idx}
+                    key={e.id}
                   />
                 </View>
               ))

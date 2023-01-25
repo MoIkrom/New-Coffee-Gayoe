@@ -80,6 +80,11 @@ function Payment() {
       result;
       handleRemoveRedux();
       setLoading(false);
+      ToastAndroid.showWithGravity(
+        statusPaid === 'Pending' ? 'Payment Pending . . . ' : 'Payment Success',
+        ToastAndroid.LONG,
+        ToastAndroid.TOP,
+      );
       navigation.replace('History');
     } catch (err) {
       console.log(err);

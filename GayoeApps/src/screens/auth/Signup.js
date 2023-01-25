@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TextInput,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import axios from 'axios';
 
@@ -20,6 +21,9 @@ import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import authAction from '../../redux/actions/auth';
 import IconIon from 'react-native-vector-icons/Ionicons';
+
+import eye from '../../assets/images/eye4.png';
+import eyeoff from '../../assets/images/eyeslash2.png';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -76,8 +80,10 @@ const Signup = () => {
       })
       .catch(err => {
         console.log(err);
+        setIsloading(false);
         ToastAndroid.showWithGravity(
-          err.response.data.msg,
+          // 'Wrong Input',
+          err.response.data,
           ToastAndroid.LONG,
           ToastAndroid.TOP,
         );
@@ -160,6 +166,7 @@ const Signup = () => {
                 onPress={tooglePassword}
               />
             </View> */}
+
             <TextInput
               style={styles.inputs}
               placeholder="Enter your email "
@@ -167,15 +174,24 @@ const Signup = () => {
               keyboardType="email-address"
               placeholderTextColor="#ffffff"
             />
-            <TextInput
-              style={styles.inputs}
-              // style={styles.input1}
-              placeholder="Enter your password "
-              onChangeText={valuePassword}
-              secureTextEntry
-              keyboardType="password"
-              placeholderTextColor="#ffffff"
-            />
+
+            <View style={styles.wrapperPwd}>
+              <TextInput
+                style={styles.inputs2}
+                // style={styles.input1}
+                placeholder="Enter your password "
+                onChangeText={valuePassword}
+                secureTextEntry={isPwdShown}
+                keyboardType="password"
+                placeholderTextColor="#ffffff"
+              />
+              <Pressable onPress={tooglePassword}>
+                <Image
+                  source={isPwdShown ? eye : eyeoff}
+                  style={styles.iconPwd}
+                />
+              </Pressable>
+            </View>
             <TextInput
               style={styles.input1}
               // style={styles.input1}
@@ -196,7 +212,7 @@ const Signup = () => {
             <TouchableOpacity style={styles.createBtn} onPress={handleRegister}>
               {isLoading ? (
                 <View style={styles.btnLoading}>
-                  <ActivityIndicator size="large" color="white" />
+                  <ActivityIndicator size="large" color="#FFBA33" />
                 </View>
               ) : (
                 <Text style={styles.textCreate}>Create Account</Text>

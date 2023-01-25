@@ -17,7 +17,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-
+  iconPwd: {
+    color: '#fff',
+    fontSize: 20,
+    width: 30,
+    height: 20,
+    position: 'relative',
+    left: -10,
+  },
   title: {
     color: 'white',
     fontSize: 65,
@@ -86,10 +93,10 @@ const styles = StyleSheet.create({
     borderBottomColor: '#fff',
     marginBottom: 10,
   },
-  iconPwd: {
-    color: '#fff',
-    fontSize: 20,
-  },
+  // iconPwd: {
+  //   color: '#fff',
+  //   fontSize: 20,
+  // },
   inputPwd: {
     fontFamily: 'Poppins-Bold',
     fontSize: 17,
@@ -129,6 +136,17 @@ const styles = StyleSheet.create({
     padding: 5,
     color: 'white',
     marginBottom: 90,
+  },
+  inputs2: {
+    flex: 1,
+    fontFamily: 'Poppins-Bold',
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#fff',
+    height: 40,
+    marginRight: 21,
+    marginTop: 10,
+    color: 'white',
   },
   inputs: {
     flex: 1,

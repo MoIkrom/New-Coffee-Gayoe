@@ -111,10 +111,8 @@ const Login = () => {
               <TextInput
                 secureTextEntry={isPwdShown}
                 style={styles.inputPwd}
-                // value={form.password}
                 placeholder="Enter your password"
                 placeholderTextColor="white"
-                // onChangeText={text => valueEmail(text, 'password')}
                 onChangeText={valuePassword}
                 keyboardType="password"
               />
