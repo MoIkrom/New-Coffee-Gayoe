@@ -100,8 +100,4 @@ $ npx react-native run-android
 
 # Related Projects
 
-<<<<<<< HEAD
 - Backend Repository [`here`](https://github.com/MoIkrom/Coffee-Gayoe)
-=======
-[Coffee gayoe - Backend](https://github.com/MoIkrom/Coffee-Gayoe)
->>>>>>> 91d1c4bc9cba119f37a96dbd6433b7a61f7504b4
