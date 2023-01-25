@@ -8,8 +8,9 @@ import {
   ActivityIndicator,
   TextInput,
   ScrollView,
+  Pressable,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import styles from '../../styles/Login';
 // import Input from '../../components/Input';
@@ -23,17 +24,16 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authAction from '../../redux/actions/auth';
 import {StackActions} from '@react-navigation/native';
+import eye from '../../assets/images/eye4.png';
+import eyeoff from '../../assets/images/eyeslash2.png';
+
+import {onBackPress} from '../../utils/backpress';
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const auth = useSelector(state => state.auth);
-  // console.log(auth.userData)
   const [isPwdShown, setIsPwdShown] = useState(true);
-  // const [form, setForm] = useState({
-  //   email: '',
-  //   password: '',
-  // });
+  const [isLoading, setIsloading] = useState(false);
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
@@ -48,74 +48,48 @@ const Login = () => {
     setIsPwdShown(!isPwdShown);
   };
 
-  // const onChangeHandler = (text, type) => {
-  //   setForm(form => ({...form, [type]: text}));
-  // };
-
   const handleSubmit = e => {
+    setIsloading(true);
     const data = {
       email,
       password,
     };
-    // login(data)
-
     axios
       .post(`https://coffee-gayoe.vercel.app/api/v1/auth`, data)
       .then(res => {
         AsyncStorage.setItem('token', res.data.result.data.token);
         AsyncStorage.setItem('role', res.data.result.data.role);
-        // console.log(res.data.result.data.token);
-        // console.log('sebelum axios');
-        dispatch(
-          authAction.userIDThunk(res.data.result.data.token, () => {
-            ToastAndroid.showWithGravity(
-              'Login Success',
-              ToastAndroid.LONG,
-              ToastAndroid.TOP,
-            ),
-              //       navigate.push('Home');
-              //       navigation.push('HomePage');
-              //   }),
-              // );
-              // ToastAndroid.showWithGravity(
-              //   'Login Success',
-              //   ToastAndroid.LONG,
-              //   ToastAndroid.TOP,
-              // ),
-              navigation.navigate('HomePage');
-          }),
-        );
-        // console.log('sudah dispatch');
+        setIsloading(false);
+        ToastAndroid.showWithGravity(
+          'Login Success',
+          ToastAndroid.LONG,
+          ToastAndroid.TOP,
+        ),
+          navigation.replace('HomePage');
       })
       .catch(err => {
         console.log(err);
+        setIsloading(false);
         ToastAndroid.showWithGravity(
-          err.response.data.msg.msg,
+          'Wrong Email/Password',
           ToastAndroid.LONG,
           ToastAndroid.TOP,
         );
       });
   };
-  // const handleSubmit = e => {
-  //   e.preventDefault();
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (token !== null) navigation.replace('HomePage');
+  };
+  const handleBackPress = () => {
+    navigation.navigate('Home');
+    return true;
+  };
 
-  //   const loginSuccess = () => {
-  //     ToastAndroid.showWithGravity(
-  //       `Welcome ${form.email}, login successfully`,
-  //       ToastAndroid.SHORT,
-  //       ToastAndroid.TOP,
-  //     );
-  //     navigation.navigate('HomePage');
-  //   };
-  //   const loginError = error => {
-  //     ToastAndroid.showWithGravity(
-  //       `${error}`,
-  //       ToastAndroid.SHORT,
-  //       ToastAndroid.TOP,
-  //     );
-  //   };
-  //   dispatch(authAction.loginThunk(form, loginSuccess, loginError));
-  // };
+  useEffect(() => {
+    getToken();
+    onBackPress(handleBackPress);
+  });
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -137,18 +111,18 @@ const Login = () => {
               <TextInput
                 secureTextEntry={isPwdShown}
                 style={styles.inputPwd}
-                // value={form.password}
                 placeholder="Enter your password"
                 placeholderTextColor="white"
-                // onChangeText={text => valueEmail(text, 'password')}
                 onChangeText={valuePassword}
                 keyboardType="password"
               />
-              <IconIon
-                name={isPwdShown ? 'eye' : 'eye-off'}
-                style={styles.iconPwd}
-                onPress={tooglePassword}
-              />
+
+              <Pressable onPress={tooglePassword}>
+                <Image
+                  source={isPwdShown ? eye : eyeoff}
+                  style={styles.iconPwd}
+                />
+              </Pressable>
             </View>
             <Text
               style={styles.forgot}
@@ -159,7 +133,7 @@ const Login = () => {
             </Text>
 
             <TouchableOpacity style={styles.createBtn} onPress={handleSubmit}>
-              {auth.isLoading ? (
+              {isLoading ? (
                 <View style={styles.btnLoading}>
                   <ActivityIndicator size="large" color="black" />
                 </View>

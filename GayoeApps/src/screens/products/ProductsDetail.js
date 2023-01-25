@@ -1,10 +1,6 @@
 import React, {useEffect, useState} from 'react';
 
 import styles from '../../styles/ProductsDetails';
-import IconComunity from 'react-native-vector-icons/MaterialCommunityIcons';
-// import Sample from '../image/product.png'
-// import ButtonCustom from '../components/FancyButton'
-
 import {
   ImageBackground,
   Text,
@@ -25,40 +21,73 @@ import {useDispatch, useSelector} from 'react-redux';
 import authAction from '../../redux/actions/auth';
 import back from '../../assets/images/back.png';
 import cart from '../../assets/images/shopping-cart.png';
+import {onBackPress} from '../../utils/backpress';
 
-// import transactionActions from '../../redux/actions/transaction';
-// import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function ProductDetail({route}) {
-  // function ProductDetail(props) {
   const {height, width} = useWindowDimensions();
   const navigation = useNavigation();
   const {id_product} = route.params;
   const [product, setProduct] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingModal, setLoadingModal] = useState(false);
   const dispatch = useDispatch();
-  //   const productId = props.route.params;
-  //   const auth = useSelector(state => state.auth.userData);
-  //   const detail = useSelector(state => state.product.detail);
+  const [roles, setRoles] = useState('');
   const [size, setSize] = useState('R');
   const [modalVisible, setModalVisible] = useState(false);
+  const handleBackPress = () => {
+    navigation.goBack();
+    return true;
+  };
+  const deleteProductByid = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const role = await AsyncStorage.getItem('role');
+    setLoadingModal(true);
+    axios
+      .delete(
+        `https://coffee-gayoe.vercel.app/api/v1/product/${id_product}`,
+        {headers: {'x-access-token': token}},
+        role,
+      )
+      .then(res => {
+        setModalVisible(false);
+        ToastAndroid.showWithGravity(
+          'Delete Product Success',
+          ToastAndroid.LONG,
+          ToastAndroid.TOP,
+        ),
+          navigation.replace('HomePage');
+        setLoadingModal(false);
+      })
 
+      .catch(err => {
+        console.log(err.response.data);
+        console.log(id_product);
+
+        setLoadingModal(false);
+      });
+  };
   const getProductByid = () => {
-    // setLoading(true);
     axios
       .get(`https://coffee-gayoe.vercel.app/api/v1/product/${id_product}`)
       .then(res => {
         setProduct(res.data.result.data[0]);
         setLoading(false);
-        console.log('masi loading');
       })
 
       .catch(err => {
         console.log(err.response.data.msg);
       });
   };
+  const getRoles = async () => {
+    const role = await AsyncStorage.getItem('role');
+    setRoles(role);
+  };
   useEffect(() => {
     getProductByid();
+    getRoles();
+    onBackPress(handleBackPress);
   }, []);
 
   const costing = price => {
@@ -69,49 +98,6 @@ function ProductDetail({route}) {
         .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
     );
   };
-
-  //   console.log(size);
-
-  //   const addCart = () => {
-  //     if (!modalVisible) return setModalVisible(true);
-  //     const cart = {
-  //       id: productId,
-  //       price: detail.price,
-  //       image: detail.image,
-  //       productName: detail.product_name,
-  //       size: size,
-  //     };
-  //     dispatch(transactionActions.dataTransaction(cart));
-  //     return ToastAndroid.showWithGravity(
-  //       `Added Product To Cart`,
-  //       ToastAndroid.SHORT,
-  //       ToastAndroid.TOP,
-  //       navigation.navigate('Cart'),
-  //     );
-  //   };
-
-  //   useEffect(() => {
-  //     dispatch(productAction.getDetailThunk(productId, auth.token));
-  //   }, [dispatch]);
-
-  // useEffect(()=>{
-  //     const BaseUrl = process.env.BACKEND_URL
-  //     axios.get(`${BaseUrl}/products/${product_id}`).then((result)=>{
-  //         setProduct(result.data.data);
-  //     }).catch((error)=>{
-  //         console.log(error);
-  //         ToastAndroid.showWithGravityAndOffset(
-  //             `Something Error`,
-  //             ToastAndroid.SHORT,
-  //             ToastAndroid.TOP,
-  //             25,
-  //             50
-  //         );
-  //         navigation.goBack()
-  //     })
-  // })
-
-  // useEffect(()=>{console.log(product)})
 
   const handleRedux = () => {
     dispatch(
@@ -124,14 +110,9 @@ function ProductDetail({route}) {
           image: product.image,
           qty: 1,
           size: size,
-          // status: null,
-          // delivery: null,
-          // payment_method: null,
-          // id_promo: null,
         },
         () => {
           navigation.navigate('Cart');
-          // console.log('masuk coy');
         },
       ),
     );
@@ -140,14 +121,24 @@ function ProductDetail({route}) {
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
-        <Image
-          source={back}
-          size={22}
-          style={styles.icon}
+        <TouchableOpacity
           onPress={() => {
             navigation.goBack();
-          }}
-        />
+          }}>
+          <View style={{flexDirection: 'row'}}>
+            <Image source={back} size={22} style={styles.icon} />
+            <Text
+              style={{
+                color: 'white',
+                marginLeft: 15,
+                fontSize: 17,
+                position: 'relative',
+                top: -2,
+              }}>
+              Back
+            </Text>
+          </View>
+        </TouchableOpacity>
         <Image source={cart} size={22} style={styles.icon} />
       </View>
       {loading ? (
@@ -157,7 +148,7 @@ function ProductDetail({route}) {
             paddingTop: 250,
           }}
           size="large"
-          color="#0000ff"
+          color="#FFBA33"
         />
       ) : (
         <View style={styles.main}>
@@ -198,13 +189,21 @@ function ProductDetail({route}) {
               </Text>
             </Text>
             <Text style={styles.description}>{product.description}</Text>
-            <Text style={styles.sizeText}> Choose a size</Text>
+            <Text
+              style={roles === 'admin' ? {display: 'none'} : styles.sizeText}>
+              {' '}
+              Choose a size
+            </Text>
             <View
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                flexDirection: 'row',
-              }}>
+              style={
+                roles === 'admin'
+                  ? {display: 'none'}
+                  : {
+                      display: 'flex',
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                    }
+              }>
               <Pressable
                 style={size === 'R' ? styles.selected : styles.button}
                 onPress={() => {
@@ -242,10 +241,13 @@ function ProductDetail({route}) {
                 </Text>
               </Pressable>
             </View>
-            <View style={{width: width, paddingBottom: 30}}>
-              {/* <ButtonCustom text={"Add to cart"} textColor={"white"} color={"#6A4029"}/> */}
+            <View
+              style={
+                roles === 'admin'
+                  ? {display: 'none'}
+                  : {width: width, paddingBottom: 10}
+              }>
               <TouchableOpacity activeOpacity={0.8} onPress={handleRedux}>
-                {/* <TouchableOpacity onPress={addCart} activeOpacity={0.8}> */}
                 <View
                   style={{
                     backgroundColor: '#6A4029',
@@ -267,6 +269,70 @@ function ProductDetail({route}) {
                 </View>
               </TouchableOpacity>
             </View>
+            <View
+              style={
+                roles === 'admin'
+                  ? {width: width, paddingTop: 100}
+                  : {display: 'none'}
+              }>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
+                  setModalVisible(true), console.log('masukChoy');
+                }}>
+                <View
+                  style={{
+                    backgroundColor: '#6A4029',
+                    height: 70,
+                    width: width / 1.2,
+                    borderRadius: 20,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontFamily: 'Poppins-Bold',
+                      fontSize: 17,
+                      fontWeight: 'bold',
+                    }}>
+                    Delete Product
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={
+                roles === 'admin'
+                  ? {width: width, paddingTop: 20}
+                  : {display: 'none'}
+              }>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() =>
+                  navigation.push('EditProduct', {id_product: id_product})
+                }>
+                <View
+                  style={{
+                    backgroundColor: '#6A4029',
+                    height: 70,
+                    width: width / 1.2,
+                    borderRadius: 20,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontFamily: 'Poppins-Bold',
+                      fontSize: 17,
+                      fontWeight: 'bold',
+                    }}>
+                    Edit Product
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
             <Modal
               visible={modalVisible}
               transparent={true}
@@ -276,30 +342,30 @@ function ProductDetail({route}) {
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                   <Text style={styles.modalText}>
-                    Are you want to continue transaction?
+                    Are you sure to Delete this Product?
                   </Text>
-                  <View style={{display: 'flex', flexDirection: 'row'}}>
-                    {/* <Pressable
-                    onPress={() => {
-                      addCart();
-                      setModalVisible(false);
-                      return ToastAndroid.showWithGravityAndOffset(
-                        `Added Product To Cart`,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.TOP,
-                        25,
-                        50,
-                      );
-                    }}
-                    style={[styles.buttonModal, styles.buttonClose]}>
-                    <Text style={styles.textStyle}>Continue</Text>
-                  </Pressable> */}
-                    <Pressable
-                      style={[styles.buttonModal, styles.buttonClose]}
-                      onPress={() => setModalVisible(!modalVisible)}>
-                      <Text style={styles.textStyle}>Cancel</Text>
-                    </Pressable>
-                  </View>
+
+                  {loadingModal ? (
+                    <View>
+                      <ActivityIndicator />
+                      <Text style={{marginTop: 10}}>
+                        Please Wait Loading . . .
+                      </Text>
+                    </View>
+                  ) : (
+                    <View style={{display: 'flex', flexDirection: 'row'}}>
+                      <Pressable
+                        style={[styles.buttonModal, styles.buttonClose]}
+                        onPress={() => setModalVisible(!modalVisible)}>
+                        <Text style={styles.textStyle}>Cancel</Text>
+                      </Pressable>
+                      <Pressable
+                        style={[styles.buttonModal, styles.buttonClose]}
+                        onPress={deleteProductByid}>
+                        <Text style={styles.textStyle}>Yes</Text>
+                      </Pressable>
+                    </View>
+                  )}
                 </View>
               </View>
             </Modal>

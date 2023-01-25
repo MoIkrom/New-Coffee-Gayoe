@@ -11,11 +11,13 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
+import {onBackPress} from '../../utils/backpress';
 import authActions from '../../redux/actions/auth';
-
+import axios from 'axios';
 import styles from '../../styles/Profile';
 import DefaultImg from '../../assets/images/default-img.png';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const back = require('../../assets/images/iconBack.png');
 const next = require('../../assets/images/arrowRight.png');
 
@@ -26,26 +28,41 @@ const Profile = () => {
   //   const dispatch = useDispatch();
   //   const profile = useSelector(state => state.profile.profile);
   // const auth = useSelector(state => state.auth.userData);
-
-  const profile = useSelector(state => state.auth.profile);
+  const [profile, setProfile] = useState('');
+  // const profile = useSelector(state => state.auth.profile);
 
   const toOerderHistory = () => {
-    navigation.navigate('History');
+    navigation.replace('History');
+  };
+  const toEditPassword = () => {
+    navigation.replace('ResetPwd');
   };
   const toEditProfile = () => {
-    navigation.navigate('Editprofile');
+    navigation.replace('Editprofile');
   };
+
   const getProfile = async () => {
-    try {
-      // const removeToken = await AsyncStorage.removeItem('token');
-      const getToken = await AsyncStorage.getItem('token');
-      return dispatch(authActions.userIDThunk(getToken));
-    } catch (error) {
-      console.log(error);
-    }
+    const token = await AsyncStorage.getItem('token');
+    setLoading(true);
+    axios
+      .get(`https://coffee-gayoe.vercel.app/api/v1/users/profile`, {
+        headers: {'x-access-token': token},
+      })
+      .then(res => {
+        setProfile(res.data.result.result[0]);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+  const handleBackPress = () => {
+    navigation.replace('HomePage');
+    return true;
   };
   useEffect(() => {
     getProfile();
+    onBackPress(handleBackPress);
     setLoading(false);
   }, []);
 
@@ -63,9 +80,9 @@ const Profile = () => {
           <Image source={back} />
         </TouchableOpacity> */}
         <View>
-          <Pressable
+          <TouchableOpacity
             onPress={() => {
-              navigation.navigate('HomePage');
+              navigation.replace('HomePage');
             }}>
             <Image source={back} size={20} style={styles.icons} />
             <Text
@@ -75,77 +92,67 @@ const Profile = () => {
                 paddingLeft: 22,
                 position: 'relative',
                 top: -16,
+                left: -20,
               }}>
               Back to Home
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
       <ScrollView style={styles.containerContent}>
         <Text style={styles.titleContent}>My profile</Text>
         <View style={styles.subTitle}>
           <Text style={styles.textInfo}>Your Information</Text>
-          <TouchableOpacity>
-            <Text style={styles.btnEdit} onPress={toEditProfile}>
-              Edit
-            </Text>
+          <TouchableOpacity onPress={toEditProfile}>
+            <Text style={styles.btnEdit}>Edit</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.wrapperProfile}>
           <View style={styles.contentImage}>
-            <View style={{width: 80, height: 80, borderRadius: 200}}>
+            <View style={{width: 100, height: 100, borderRadius: 10}}>
               {loading ? (
-                <ActivityIndicator />
+                <ActivityIndicator
+                  style={{
+                    position: 'relative',
+                    top: 30,
+                    left: 10,
+                  }}
+                />
               ) : (
                 <Image
                   source={
                     profile.image === null ? DefaultImg : {uri: profile.image}
                   }
-                  style={{width: 80, height: 80, borderRadius: 200}}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 10,
+                    position: 'relative',
+                    top: 0,
+                    left: 0,
+                  }}
                 />
               )}
-
-              {/* {profile.isLoading ? (
-                <ActivityIndicator />
-              ) : (
-                <Image
-                  source={{
-                    uri: profile.image !== null ? profile.image : DefaultImg,
-                  }}
-                  style={{width: 80, height: 80, borderRadius: 200}}
-                />
-              )} */}
             </View>
           </View>
-          <View>
-            {/* <Text style={styles.textName}>{'display_name'}</Text> */}
-            <Text style={styles.textName}>
+          <View style={styles.contname}>
+            <Text style={loading ? {display: 'none'} : styles.textName}>
               {profile.display_name === null
                 ? 'Username'
                 : profile.display_name}
             </Text>
-            <View
-              style={{
-                borderBottomWidth: 0.5,
-                width: 160,
-                borderBottomColor: '#6A4029',
-                // marginBottom: 5,
-              }}>
-              <Text style={styles.textEmail}>{profile.email}</Text>
-              {/* <Text style={styles.textEmail}>{profile.email}</Text> */}
+            <View>
+              <Text style={loading ? {display: 'none'} : styles.textEmail}>
+                {profile.email}
+              </Text>
             </View>
-            <View
-              style={{
-                borderBottomWidth: 0.5,
-                width: 160,
-                borderBottomColor: '#6A4029',
-                marginBottom: 10,
-              }}>
-              {/* <Text style={styles.textPhone}>{`+62 ${'8123456789'}`}</Text> */}
-              <Text style={styles.textPhone}>{` ${profile.phone_number}`}</Text>
+            <View>
+              <Text style={loading ? {display: 'none'} : styles.textPhone}>
+                {`${profile.phone_number}`}
+              </Text>
             </View>
-            {/* <Text style={styles.address}>{'address'}</Text> */}
-            <Text style={styles.address}>
+
+            <Text style={loading ? {display: 'none'} : styles.address}>
               {profile.addres === null
                 ? 'Please set your address  '
                 : profile.addres}
@@ -165,7 +172,7 @@ const Profile = () => {
             </Text>
             <Image source={next} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btn}>
+          <TouchableOpacity style={styles.btn} onPress={toEditPassword}>
             <Text
               style={{
                 fontFamily: 'Poppins-Bold',
@@ -201,7 +208,7 @@ const Profile = () => {
             </Text>
             <Image source={next} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnSave}>
+          {/* <TouchableOpacity style={styles.btnSave}>
             <Text
               style={{
                 fontFamily: 'Poppins-Bold',
@@ -210,7 +217,7 @@ const Profile = () => {
               }}>
               Save Change
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </ScrollView>
     </View>

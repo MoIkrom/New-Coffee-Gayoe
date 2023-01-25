@@ -92,10 +92,19 @@ const style = StyleSheet.create({
     borderBottomColor: '#fff',
     marginBottom: 10,
   },
+  // iconPwd: {
+  //   color: '#fff',
+  //   fontSize: 20,
+  // },
   iconPwd: {
     color: '#fff',
     fontSize: 20,
+    width: 30,
+    height: 20,
+    position: 'relative',
+    left: -10,
   },
+
   inputPwd: {
     fontFamily: 'Poppins-Bold',
     fontSize: 17,

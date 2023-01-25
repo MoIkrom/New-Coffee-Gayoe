@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-// import ButtonOpacity from '../components/ButtonOpacity';
+import axios from 'axios';
 import styles from '../../styles/EditProfile';
 // import img_product from '../../assets/images/product.png';
 import DefaultImg from '../../assets/images/default-img.png';
@@ -22,7 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import authActions from '../../redux/actions/auth';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import ButtonOpacity from '../../components/ButtonOpacity';
-// import DateTimePicker from '@react-native-community/datetimepicker';
+import {onBackPress} from '../../utils/backpress';
 import {editProfile} from '../../utils/api';
 import {useNavigation} from '@react-navigation/native';
 import bg from '../../assets/images/brown.png';
@@ -31,34 +31,55 @@ import pencil from '../../assets/images/pencil.png';
 const EditProfile = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const profile = useSelector(state => state.auth.profile);
-
-  const [firstName, setFirstName] = useState(profile.firstname);
-  const [lastName, setLastName] = useState(profile.lastname);
-  const [displayName, setDisplayName] = useState(profile.display_name);
-  const [gender, setGender] = useState(profile.gender);
-  const [filePath, setFilePath] = useState(profile.image);
-  const [image, setImage] = useState('');
+  const back = require('../../assets/images/iconBack.png');
+  // const [birthday, setBirthday] = useState(profile.birthday);
+  // const [gender, setGender] = useState(profile.gender);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [filePath, setFilePath] = useState('');
+  const [address, setAddress] = useState('');
   const [editPhoto, setEditPhoto] = useState(false);
-  const [birthday, setBirthday] = useState(profile.birthday);
   const [show, setShow] = useState(false);
-  const [address, setAddress] = useState(profile.addres);
+  const [image, setImage] = useState('');
   const [edit, setEdit] = useState(false);
-  const [deps, setDeps] = useState('');
   const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState('');
 
   const getProfile = async () => {
-    try {
-      // const removeToken = await AsyncStorage.removeItem('token');
-      const getToken = await AsyncStorage.getItem('token');
-      return dispatch(authActions.userIDThunk(getToken));
-    } catch (error) {
-      console.log(error);
-    }
+    const token = await AsyncStorage.getItem('token');
+    setLoading(true);
+    axios
+      .get(`https://coffee-gayoe.vercel.app/api/v1/users/profile`, {
+        headers: {'x-access-token': token},
+      })
+      .then(res => {
+        setProfile(res.data.result.result[0]);
+        setFilePath(res.data.result.result[0].image);
+        setFirstName(res.data.result.result[0].firstname);
+        setLastName(res.data.result.result[0].lastname);
+        setDisplayName(res.data.result.result[0].display_name);
+        setAddress(res.data.result.result[0].addres);
+
+        setLoading(false);
+        console.log(profile);
+      })
+      .catch(err => {
+        ToastAndroid.showWithGravity(
+          err.response.data,
+          ToastAndroid.LONG,
+          ToastAndroid.TOP,
+        );
+      });
+  };
+  const handleBackPress = () => {
+    navigation.navigate('Profile');
+    return true;
   };
   useEffect(() => {
+    onBackPress(handleBackPress);
     getProfile();
-  }, [deps]);
+  }, []);
 
   const dateHandle = (event, value) => {
     setBirthday(
@@ -74,7 +95,7 @@ const EditProfile = () => {
   const camera = () => {
     const option = {
       mediaType: 'photo',
-      quality: 1,
+      quality: 0.7,
     };
 
     launchCamera(option, res => {
@@ -92,7 +113,7 @@ const EditProfile = () => {
         );
       } else {
         const data = res.assets[0];
-        console.log(res.assets[0]);
+        // console.log(res.assets[0]);
         setFilePath(data.uri);
         setImage(res.assets);
         setEditPhoto(false);
@@ -136,19 +157,14 @@ const EditProfile = () => {
       if (firstName) formData.append('firstname', firstName);
       if (lastName) formData.append('lastname', lastName);
       if (displayName) formData.append('display_name', displayName);
-      if (gender) formData.append('gender', gender);
-      if (birthday) formData.append('birthday', birthday);
+      // if (gender) formData.append('gender', gender);
+      // if (birthday) formData.append('birthday', birthday);
       if (address) formData.append('addres', address);
       if (image)
         formData.append('image', {
           name: image[0].fileName,
-          type: image[0]?.type,
+          type: image[0].type,
           uri: image[0].uri,
-          // name: 'test.' + image[0]?.type?.substr(6),
-          // uri:
-          //   Platform.OS !== 'android'
-          //     ? 'file://' + image[0]?.uri
-          //     : image[0]?.uri,
         });
 
       await editProfile(getToken, formData);
@@ -157,37 +173,55 @@ const EditProfile = () => {
         ToastAndroid.LONG,
         ToastAndroid.TOP,
       );
-      console.log(filePath);
-      dispatch(authActions.userIDThunk(getToken, formData));
-      setDeps(Math.floor(Math.random() * 100000));
+      // console.log(filePath);
+      // dispatch(authActions.userIDThunk(getToken, formData));
+      // setDeps(Math.floor(Math.random() * 100000));
       navigation.push('Profile');
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(true);
       ToastAndroid.showWithGravity(
-        error.response.data.msg,
+        error.response,
         ToastAndroid.LONG,
         ToastAndroid.TOP,
       );
       setLoading(false);
     }
   };
+
   return (
     // <NativeBaseProvider>
     <ScrollView>
-      {/* {show && (
-        <DateTimePicker
-          value={new Date()}
-          mode={'date'}
-          display="default"
-          onChange={dateHandle}
-        />
-      )} */}
+      <View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Profile');
+          }}>
+          <Image source={back} size={20} style={styles.icons} />
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: 'bold',
+              paddingLeft: 22,
+              position: 'relative',
+              top: 9,
+              left: 20,
+            }}>
+            Back
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* ======================================= */}
+
       <View style={styles.container}>
         <View style={styles.img_bar}>
           {filePath === null ? (
-            <Image source={DefaultImg} style={styles.img} />
+            <Image
+              source={profile.image !== null ? profile.image : DefaultImg}
+              style={styles.img}
+            />
           ) : (
             <Image source={{uri: filePath}} style={styles.img} />
           )}
@@ -206,10 +240,6 @@ const EditProfile = () => {
 
               <View>
                 <Pressable onPress={() => setEditPhoto(true)}>
-                  {/* <Image
-                    source={bg}
-                    style={{position: 'relative', top: -20, right: -10}}
-                  /> */}
                   <Image
                     source={pencil}
                     style={{position: 'relative', top: 0, right: 0}}
@@ -243,29 +273,76 @@ const EditProfile = () => {
           </View>
         </View>
         {!editPhoto ? (
-          <TouchableOpacity
-            onPress={() => setEdit(true)}
-            activeOpacity={0.5}
-            style={{
-              backgroundColor: '#6a4029',
-              height: 40,
-              width: 180,
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 20,
-              marginBottom: 10,
-              marginTop: 20,
-            }}>
-            <Text
+          <View style={styles.contbtnedit}>
+            <TouchableOpacity
+              onPress={() => setEdit(!edit)}
+              activeOpacity={0.5}
+              style={
+                edit === false
+                  ? {
+                      backgroundColor: '#f5c361',
+                      height: 40,
+                      width: 100,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 10,
+                      marginBottom: 10,
+                      marginTop: 20,
+                    }
+                  : {
+                      backgroundColor: '#6A4029',
+                      height: 40,
+                      width: 100,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 10,
+                      marginBottom: 10,
+                      marginTop: 20,
+                    }
+              }>
+              <Text
+                style={
+                  edit === false
+                    ? {
+                        color: '#6a4029',
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                      }
+                    : {
+                        color: 'white',
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                      }
+                }>
+                {!edit ? 'Edit Data' : 'Save Data'}
+              </Text>
+            </TouchableOpacity>
+            {/* <TouchableOpacity
+              onPress={() => setEdit(false)}
+              activeOpacity={0.5}
               style={{
-                color: 'white',
-                fontFamily: 'Poppins',
-                fontSize: 14,
-                fontWeight: 'bold',
+                backgroundColor: '#6a4029',
+                height: 40,
+                width: 100,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 20,
+                marginBottom: 10,
+                marginTop: 20,
               }}>
-              edit profile
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  color: 'white',
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                }}>
+                edit profile
+              </Text>
+            </TouchableOpacity> */}
+          </View>
         ) : (
           <View style={styles.two_btn}>
             <TouchableOpacity
@@ -316,6 +393,9 @@ const EditProfile = () => {
             </TouchableOpacity>
           </View>
         )}
+
+        {/* ============================================ */}
+
         {/* form input */}
         <View style={styles.form}>
           <View style={styles.input_bar}>
@@ -330,9 +410,7 @@ const EditProfile = () => {
                 placeholder="Input First Name"
                 placeholderTextColor="#9F9F9F"
                 value={firstName}
-                onChangeText={e => {
-                  setFirstName(e);
-                }}
+                onChangeText={text => setFirstName(text)}
               />
             )}
             <Text style={styles.label}>Last Name :</Text>
@@ -346,9 +424,7 @@ const EditProfile = () => {
                 placeholder="Input Last Name"
                 placeholderTextColor="#9F9F9F"
                 value={lastName}
-                onChangeText={e => {
-                  setLastName(e);
-                }}
+                onChangeText={text => setLastName(text)}
               />
             )}
             <Text style={styles.label}>Display Name :</Text>
@@ -362,55 +438,10 @@ const EditProfile = () => {
                 placeholder="input display name"
                 placeholderTextColor="#9F9F9F"
                 value={displayName}
-                onChangeText={e => {
-                  setDisplayName(e);
-                }}
+                onChangeText={text => setDisplayName(text)}
               />
             )}
           </View>
-          {/* {!edit ? (
-            <Text style={styles.gender}>
-              {gender !== null
-                ? `your gender : ${gender}`
-                : `you havent input gender`}
-            </Text>
-          ) : (
-            <View style={styles.radio_bar}>
-              <Radio.Group
-                name="Gender"
-                value={gender}
-                onChange={gender => {
-                  setGender(gender);
-                  console.log(gender);
-                }}
-                accessibilityLabel="Gender">
-                <Stack
-                  direction={{
-                    base: 'row',
-                    sm: 'row',
-                  }}
-                  alignItems={{
-                    base: 'flex-start',
-                    sm: 'center',
-                  }}
-                  space={4}
-                  w="75%"
-                  maxW="300px">
-                  <Radio value="female" colorScheme="amber" size="sm" my={1}>
-                    Female
-                  </Radio>
-                  <Radio
-                    value="male"
-                    colorScheme="amber"
-                    size="sm"
-                    my={1}
-                    ml={3}>
-                    Male
-                  </Radio>
-                </Stack>
-              </Radio.Group>
-            </View>
-          )} */}
           <View>
             <Text style={styles.label}>Email Adress :</Text>
             <Text style={styles.Text_input}>{profile.email}</Text>
@@ -419,23 +450,7 @@ const EditProfile = () => {
             <Text style={styles.label}>Phone Number :</Text>
             <Text style={styles.Text_input}>{profile.phone_number}</Text>
           </View>
-          {/* <View>
-            <Text style={styles.label}>Date of Birth :</Text>
-            {!edit ? (
-              <Text style={styles.Text_input}>
-                {birthday !== null
-                  ? birthday.slice(0, 10)
-                  : `you haven't input display name`}
-              </Text>
-            ) : (
-              <Text style={styles.Text_input} onPress={() => showMode()}>
-                {' '}
-                {birthday !== null
-                  ? birthday.slice(0, 10)
-                  : `you haven't input display name`}{' '}
-              </Text>
-            )}
-          </View> */}
+
           <View>
             <Text style={styles.label}>Delivery Address :</Text>
             {!edit ? (
@@ -446,25 +461,29 @@ const EditProfile = () => {
               </Text>
             ) : (
               <TextInput
-                style={styles.input}
+                style={[styles.input, styles.contaddres]}
                 placeholder="input your delivery address"
                 placeholderTextColor="#9F9F9F"
                 value={address}
-                onChangeText={e => {
-                  setAddress(e);
-                }}
+                onChangeText={text => setAddress(text)}
               />
             )}
           </View>
         </View>
-        {loading ? (
-          <View style={{marginTop: 20}}>
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
+        {edit === true ? (
+          ''
         ) : (
           <ButtonOpacity
             color={'#6a4029'}
-            text="Save"
+            text={
+              loading ? (
+                <View style={{marginTop: 35, marginBottom: 50}}>
+                  <ActivityIndicator size="large" color="#FFBA33" />
+                </View>
+              ) : (
+                'Save Change'
+              )
+            }
             radius={20}
             colorText="white"
             height={60}
@@ -473,7 +492,7 @@ const EditProfile = () => {
             marginTop={20}
             onPressHandler={{
               onPress: () => {
-                saveHandle(), setEdit(false);
+                saveHandle();
               },
             }}
           />

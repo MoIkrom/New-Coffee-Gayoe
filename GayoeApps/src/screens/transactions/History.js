@@ -33,6 +33,8 @@ import swipe from '../../assets/images/swipe.png';
 import backs from '../../assets/images/backblack.png';
 import trash from '../../assets/images/trash.png';
 
+import {onBackPress} from '../../utils/backpress';
+
 function History() {
   const [history, setHistory] = useState([]);
   const [historyAdmin, setHistoryAdmin] = useState([]);
@@ -50,14 +52,10 @@ function History() {
       setLoading(true);
       const getToken = await AsyncStorage.getItem('token');
       const response = await getHistoryAll(getToken);
-      // console.log(response.data.result.data);
       setHistory(response.data.result.data);
-      // setDeps(response.data.result.data.length)
-      // setDeps(response.data.result.data.length);
-      // console.log(response.data.result.data.length);
+      console.log('ini response' + response);
       setLoading(false);
     } catch (error) {
-      // console.log(error.response.data.msg)
       setNotfound(error.response.data.msg);
       setLoading(false);
     }
@@ -87,8 +85,17 @@ function History() {
         .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
     );
   };
-
+  const handleBackPress = () => {
+    navigation.replace('HomePage');
+    return true;
+  };
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (token === null) navigation.replace('Login');
+  };
   useEffect(() => {
+    onBackPress(handleBackPress);
+    getToken();
     getDataHistory();
   }, []);
   //   useEffect(() => {
@@ -101,7 +108,7 @@ function History() {
         <View>
           <Pressable
             onPress={() => {
-              navigation.navigate('HomePage');
+              navigation.replace('HomePage');
             }}>
             <Image source={back} size={20} style={styles.icons} />
             <Text
@@ -134,6 +141,7 @@ function History() {
           color="#0000ff"
         />
       ) : (
+        // ) : history.length > 0 ? (
         <ScrollView style={{paddingLeft: 25, paddingRight: 25}}>
           <View style={{paddingLeft: 10}}>
             {history.map(e => (
@@ -147,6 +155,9 @@ function History() {
             ))}
           </View>
         </ScrollView>
+        // ) : (
+        //   'History Not Available'
+        // )}
       )}
 
       {/* {history?.map(e => {

@@ -54,8 +54,8 @@ const CardHistory = props => {
           ) : null}
           <Text
             style={
-              props.status === 'paid'
-                ? {fontWeight: 'bold', fontSize: 18, color: '#6A4029'}
+              props.status === 'Paid'
+                ? {fontWeight: 'bold', fontSize: 18, color: '#008000'}
                 : {fontWeight: 'bold', fontSize: 18, color: '#FA4A0C'}
             }>
             {props.status}

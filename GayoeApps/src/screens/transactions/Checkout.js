@@ -17,18 +17,23 @@ import axios from 'axios';
 import back from '../../assets/images/backblack.png';
 // import {NativeBaseProvider, Radio} from 'native-base';
 
+import {onBackPress} from '../../utils/backpress';
+
 import {useDispatch, useSelector} from 'react-redux';
 import authAction from '../../redux/actions/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Checkout() {
-  // const [method, setMethod] = useState('4');
-  const profile = useSelector(state => state.auth.profile);
   const product = useSelector(state => state.auth.product);
   const dispatch = useDispatch();
   const [value, setValue] = useState('1');
-
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [address, setAddress] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const navigation = useNavigation();
+
+  const [loading, setLoading] = useState(false);
 
   const costing = price => {
     return (
@@ -38,7 +43,33 @@ function Checkout() {
         .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
     );
   };
+  const getProfile = async () => {
+    const token = await AsyncStorage.getItem('token');
+    setLoading(true);
+    axios
+      .get(`https://coffee-gayoe.vercel.app/api/v1/users/profile`, {
+        headers: {'x-access-token': token},
+      })
+      .then(res => {
+        setFirstName(res.data.result.result[0].firstname);
+        setLastName(res.data.result.result[0].lastname);
+        setAddress(res.data.result.result[0].addres);
+        setPhoneNumber(res.data.result.result[0].phone_number);
 
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+  const handleBackPress = () => {
+    navigation.goBack();
+    return true;
+  };
+  useEffect(() => {
+    getProfile();
+    onBackPress(handleBackPress);
+  }, []);
   const handleValue = () => {
     // value === 1 ? 5000 : 0;
     if (value === '1') return 5000;
@@ -76,13 +107,23 @@ function Checkout() {
       </View>
       <View style={{paddingTop: 30}}>
         <Text style={styles.TitleDelivery}>Delivery</Text>
-        <Text style={styles.TitleAddress}>Address details</Text>
+        <Text style={styles.TitleAddress}>Profile Details</Text>
         <View style={styles.CardAddress}>
-          <Text style={styles.CardStreet}>{profile.display_name}</Text>
-          <Text style={styles.CardStreetDetail}>{profile.addres}</Text>
-          <Text style={styles.CardPhone}>{profile.phone_number}</Text>
-          {/* <Text style={styles.CardStreetDetail}>{profile.address}</Text>
-          <Text style={styles.CardPhone}>{`+62 ${profile.phone}`}</Text> */}
+          <View style={styles.contdel}>
+            <Text style={styles.CardStreets}>Delivery to </Text>
+            <Text style={styles.d}>
+              : {firstName} {lastName}
+            </Text>
+          </View>
+          <View style={styles.contdel}>
+            <Text style={styles.CardStreets}>Address</Text>
+            <Text style={styles.colon}>:</Text>
+            <Text style={styles.CardStreetDetail}>{address}</Text>
+          </View>
+          <View style={styles.contdel}>
+            <Text style={styles.CardStreets}>Phone Number </Text>
+            <Text style={styles.CardPhone}> : {phoneNumber}</Text>
+          </View>
         </View>
         <Text style={styles.TitleAddress}>Delivery methods</Text>
         <View style={styles.CardMethods}>
@@ -227,7 +268,7 @@ function Checkout() {
                   fontSize: 20,
                   paddingLeft: 60,
                 }}>
-                Proceed to payment
+                Process to payment
               </Text>
             </View>
           </TouchableOpacity>

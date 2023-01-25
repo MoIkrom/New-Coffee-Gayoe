@@ -5,13 +5,27 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import bg from '../../assets/images/bgHome.png';
 import styles from '../../styles/Home';
 import {useNavigation} from '@react-navigation/native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Home = () => {
   const navigation = useNavigation();
+  const getTokens = async () => {
+    try {
+      const getToken = await AsyncStorage.getItem('token');
+      if (getToken === null) navigation.replace('Login');
+    } catch (error) {
+      console.log(error);
+      // navigation.navigate('WelcomePage');
+    }
+  };
+  // useEffect(() => {
+  //   getTokens();
+  // }, []);
   return (
     <View style={styles.container}>
       <ImageBackground source={bg} resizeMode="cover" style={styles.bg}>

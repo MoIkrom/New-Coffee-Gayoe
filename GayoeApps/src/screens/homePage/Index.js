@@ -7,19 +7,20 @@ import {
   TouchableOpacity,
   ScrollView,
   LinearLayout,
+  Modal,
   useWindowDimensions,
   ActivityIndicator,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Navbar from '../../components/Navbar';
 import Card from '../../components/CardProduct';
-import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
-import IconIon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import {useDispatch} from 'react-redux';
 import React, {useEffect, useState} from 'react';
 import authAction from '../../redux/actions/auth';
 import {debounce} from '../../utils/debounce';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Styles
 import styles from '../../styles/HomePage';
@@ -34,22 +35,26 @@ const Home = () => {
 
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
-  const [navFav, setNavFav] = useState(false);
+  const [navFav, setNavFav] = useState(true);
   const [navPromo, setNavPromo] = useState(true);
-  const [navFood, setFood] = useState(true);
+  const [navFood, setFood] = useState(false);
   const [navCoff, setNavCoff] = useState(true);
   const [navNonCoff, setNavNonCoff] = useState(true);
   const [navadd, setNavadd] = useState(true);
-  const [category, setCategory] = useState('favorite');
-  const [sort, setSort] = useState('favorite');
+  const [category, setCategory] = useState('Food');
+  const [sort, setSort] = useState('newest');
   const [product, setProduct] = useState([]);
   const [notfound, setNotfound] = useState('');
   const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState('');
+  const [tokens, setTokens] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
 
   const valueSearch = e => {
     setSearch(e);
   };
-  const debounceOnChange = debounce(valueSearch, 1000);
+  const updateChange = text => setSearch(text);
+  const debounceOnChange = debounce(updateChange, 1000);
   // link active
   const navActive1 = () => {
     setNavFav(false),
@@ -59,7 +64,7 @@ const Home = () => {
       setNavNonCoff(true),
       setNavadd(true),
       setCategory(),
-      setSort('name');
+      setSort(sort);
   };
   const navActive2 = () => {
     setNavFav(true),
@@ -79,7 +84,7 @@ const Home = () => {
       setNavNonCoff(true),
       setNavadd(true),
       setCategory('Food'),
-      setSort();
+      setSort(sort);
     setSearch(search);
   };
   const navActive4 = () => {
@@ -90,7 +95,7 @@ const Home = () => {
       setNavNonCoff(true),
       setNavadd(true),
       setCategory('Coffee'),
-      setSort();
+      setSort(sort);
     setSearch(search);
   };
   const navActive5 = () => {
@@ -100,8 +105,8 @@ const Home = () => {
       setNavCoff(true),
       setNavNonCoff(false),
       setNavadd(true),
-      setCategory('Non Coffee');
-    setSort();
+      setCategory('Non-Coffee');
+    setSort(sort);
     setSearch(search);
   };
   const navActive6 = () => {
@@ -111,12 +116,18 @@ const Home = () => {
       setNavCoff(true),
       setNavNonCoff(true),
       setNavadd(false),
-      setCategory('Add On'),
-      setSort();
+      setCategory('Add-On'),
+      setSort(sort);
     setSearch(search);
   };
-
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const role = await AsyncStorage.getItem('role');
+    setRoles(role);
+    setTokens(token);
+  };
   useEffect(() => {
+    getToken();
     setLoading(true);
     axios
       .get(
@@ -124,11 +135,8 @@ const Home = () => {
       )
       .then(res => {
         setProduct(res.data.data);
-        // setProduct(res.data.data),
         setNotfound(search);
         setLoading(false);
-        console.log(res.data.data);
-        // console.log('data ke get lho....');
       })
       .catch(err => {
         setNotfound(err.response.data.msg);
@@ -156,147 +164,236 @@ const Home = () => {
       }),
     );
   };
+  const getTokenCheck = async () => {
+    const token = await AsyncStorage.getItem('token');
+
+    token === null ? navigation.navigate('Home') : '';
+  };
 
   useEffect(() => {
     resetReduxTransactions();
+    // getTokenCheck();
   }, []);
 
   return (
     <View style={styles.sectionContainer}>
-      <Navbar>
-        <ScrollView>
-          <View style={styles.container}>
-            <Text style={styles.title}>A good coffee is a good day</Text>
-            <View style={styles.wrapperSearch}>
-              {/* <FontAwesome icon={SolidIcons.search} style={styles.iconSearch} /> */}
-              <Image source={search} style={styles.Icons} />
-              <TextInput
-                style={styles.textPlaceholder}
-                placeholder="🔍 Search"
-                placeholderTextColor="grey"
-                // onChangeText={valueSearch}
-                onChangeText={debounceOnChange}
-                value={search}
-              />
-            </View>
-            <View style={styles.categorys}>
-              <TouchableOpacity>
-                <Text
-                  style={navFav ? styles.categorys : styles.nav_product_black}
-                  onPress={navActive1}>
-                  Favorite
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
+      {tokens === null ? (
+        navigation.replace('Home')
+      ) : (
+        <Navbar>
+          <ScrollView>
+            <View style={styles.container}>
+              <Text style={styles.title}>A good coffee is a good day</Text>
+              <View style={styles.wrapperSearch}>
+                <Image source={search} style={styles.Icons} />
+                <TextInput
+                  style={styles.textPlaceholder}
+                  placeholder=" Search Product Here "
+                  placeholderTextColor="grey"
+                  onChangeText={debounceOnChange}
+                />
+              </View>
+
+              {/* Start Search with Sort */}
+              {/* <View style={styles.divup}>
+                <View style={styles.wrapperSearch}>
+                  <Image source={search} style={styles.icons} />
+                  <TextInput
+                    style={styles.textPlaceholder}
+                    placeholder=" Search Product Here "
+                    placeholderTextColor="grey"
+                    onChangeText={debounceOnChange}
+                  />
+
+                 
+                </View>
+                <View style={styles.cardfilter}>
+                  <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Text style={styles.text}>Sort</Text>
+                  </TouchableOpacity>
+                </View>
+                <Modal
+                  visible={modalVisible}
+                  transparent={true}
+                  onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                  }}>
+                  <View style={styles.centeredView}>
+                    <Pressable
+                      style={[styles.buttonss, styles.buttonClosed]}
+                      onPress={() => setModalVisible(!modalVisible)}>
+                      <Text style={styles.textStyles}>X</Text>
+                    </Pressable>
+                    <View style={styles.modalView}>
+                      <Text style={styles.modalText}>Sorting By :</Text>
+                      <View
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                        }}>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            setModalVisible(!modalVisible);
+                            setSort('name');
+                          }}>
+                          <Text style={styles.textStyle}>Name</Text>
+                        </Pressable>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            setModalVisible(!modalVisible);
+                            setSort('expensive');
+                          }}>
+                          <Text style={styles.textStyle}>Pricy</Text>
+                        </Pressable>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            setModalVisible(!modalVisible);
+                            setSort('cheapest');
+                          }}>
+                          <Text style={styles.textStyle}>Cheapest</Text>
+                        </Pressable>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            setModalVisible(!modalVisible);
+                            setSort('newest');
+                          }}>
+                          <Text style={styles.textStyle}>New Product </Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
+              </View> */}
+              {/* End Search with Sort */}
+
+              <View style={styles.categorys}>
+                <TouchableOpacity>
+                  <Text
+                    style={navFav ? styles.categorys : styles.nav_product_black}
+                    onPress={navActive1}>
+                    Favorite
+                  </Text>
+                </TouchableOpacity>
+                {/* <TouchableOpacity>
                 <Text
                   style={navPromo ? styles.categorys : styles.nav_product_black}
                   onPress={navActive2}>
                   Promo
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text
-                  style={navFood ? styles.categorys : styles.nav_product_black}
-                  onPress={navActive3}>
-                  Food
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text
-                  style={navCoff ? styles.categorys : styles.nav_product_black}
-                  onPress={navActive4}>
-                  Coffee
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text
-                  style={
-                    navNonCoff ? styles.categorys : styles.nav_product_black
-                  }
-                  onPress={navActive5}>
-                  Non-Coffee
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text
-                  style={navadd ? styles.categorys : styles.nav_product_black}
-                  onPress={navActive6}>
-                  Add-On
-                </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
+                <TouchableOpacity>
+                  <Text
+                    style={
+                      navFood ? styles.categorys : styles.nav_product_black
+                    }
+                    onPress={navActive3}>
+                    Food
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Text
+                    style={
+                      navCoff ? styles.categorys : styles.nav_product_black
+                    }
+                    onPress={navActive4}>
+                    Coffee
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Text
+                    style={
+                      navNonCoff ? styles.categorys : styles.nav_product_black
+                    }
+                    onPress={navActive5}>
+                    Non-Coffee
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Text
+                    style={navadd ? styles.categorys : styles.nav_product_black}
+                    onPress={navActive6}>
+                    Add-On
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          <ScrollView style={styles.container}>
-            <Text
-              style={styles.category}
-              // onPress={() => {
-              //   navigation.navigate('ProductsDetails');
-              // }}
-            >
-              {/* Coffee */}
-              {category === 'Coffee'
-                ? 'Coffee'
-                : category === 'favorite'
-                ? 'Favorite'
-                : category === 'Non Coffee'
-                ? 'Non Coffee'
-                : category === 'Food'
-                ? 'Foods'
-                : category === 'Add On'
-                ? 'Add on'
-                : 'All'}
-            </Text>
-            <Text
-              style={styles.see}
-              onPress={() => {
-                navigation.navigate('AllProduct', {
-                  category: category,
-                  sort: sort,
-                });
-              }}>
-              See more
-            </Text>
-            <ScrollView
-              // showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              keyboardShouldPersistTaps={'always'}
-              // style={{height: height / 2}}
-            >
-              {notfound === 'Internal server Error' ? (
+            <ScrollView style={styles.container}>
+              <Text
+                style={styles.category}
+                // onPress={() => {
+                //   navigation.navigate('ProductsDetails');
+                // }}
+              >
+                {/* Coffee */}
+                {category === 'Coffee'
+                  ? 'Coffee'
+                  : category === 'favorite'
+                  ? 'Favorite'
+                  : category === 'Non-Coffee'
+                  ? 'Non Coffee'
+                  : category === 'Food'
+                  ? 'Foods'
+                  : category === 'Add-On'
+                  ? 'Add on'
+                  : 'All'}
+              </Text>
+              <Pressable>
                 <Text
-                  style={{
-                    paddingHorizontal: 100,
-                    paddingTop: 100,
-                    fontSize: 25,
+                  style={styles.see}
+                  onPress={() => {
+                    navigation.navigate('AllProduct', {
+                      category: category,
+                      sort: sort,
+                    });
                   }}>
-                  Product Not Found{' '}
+                  See more
                 </Text>
-              ) : loading ? (
-                <ActivityIndicator
-                  style={{
-                    paddingHorizontal: 160,
-                    paddingTop: 150,
-                  }}
-                  size="large"
-                  color="#0000ff"
-                />
-              ) : (
-                product.map((e, idx) => (
-                  <Card
-                    // name={'Juz Alvokat'}
-                    // price={10000}
-                    // img={Sample}
-                    name={e.product_name}
-                    price={e.price}
-                    img={e.image}
-                    id={e.id}
-                    key={idx}
+              </Pressable>
+              <ScrollView
+                // showsHorizontalScrollIndicator={false}
+                horizontal={true}
+                keyboardShouldPersistTaps={'always'}
+                // style={{height: height / 2}}
+              >
+                {notfound === 'Internal server Error' ? (
+                  <Text
+                    style={{
+                      paddingHorizontal: 100,
+                      paddingTop: 100,
+                      fontSize: 25,
+                    }}>
+                    Product Not Found{' '}
+                  </Text>
+                ) : loading ? (
+                  <ActivityIndicator
+                    style={{
+                      paddingHorizontal: 160,
+                      paddingTop: 150,
+                    }}
+                    size="large"
+                    color="#0000ff"
                   />
-                ))
-              )}
-            </ScrollView>
+                ) : (
+                  product.map((e, idx) => (
+                    <Card
+                      // name={'Juz Alvokat'}
+                      // price={10000}
+                      // img={Sample}
+                      name={e.product_name}
+                      price={e.price}
+                      img={e.image}
+                      id={e.id}
+                      key={idx}
+                    />
+                  ))
+                )}
+              </ScrollView>
 
-            {/* <Text style={styles.category}>Food</Text>
+              {/* <Text style={styles.category}>Food</Text>
           <Text
             style={styles.see}
             onPress={() => {
@@ -354,9 +451,52 @@ const Home = () => {
               </View>
             </Pressable>
           </ScrollView> */}
+            </ScrollView>
+            {roles === 'admin' ? (
+              <View
+                style={
+                  loading
+                    ? {display: 'none'}
+                    : {
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginVertical: 50,
+                      }
+                }>
+                <TouchableOpacity
+                  style={styles.btnadd}
+                  onPress={() => {
+                    navigation.navigate('AddProduct');
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontWeight: 'bold',
+                      fontSize: 20,
+                      color: '#6A4029',
+                    }}>
+                    Add Product
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnadd}>
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontWeight: 'bold',
+                      fontSize: 20,
+                      color: '#6A4029',
+                    }}>
+                    Add Promo
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              ''
+            )}
           </ScrollView>
-        </ScrollView>
-      </Navbar>
+        </Navbar>
+      )}
     </View>
   );
 };
