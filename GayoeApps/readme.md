@@ -101,3 +101,5 @@ $ npx react-native run-android
 # Related Projects
 
 - Backend Repository [`here`](https://github.com/MoIkrom/Coffee-Gayoe)
+- Repository Frontend Web [`here`](https://github.com/MoIkrom/REACT---COFFEE-GAYOE)
+- Deployment [`here`](https://bit.ly/gayoeapps)
