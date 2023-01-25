@@ -65,7 +65,11 @@ const EditProfile = () => {
         console.log(profile);
       })
       .catch(err => {
-        console.log(err);
+        ToastAndroid.showWithGravity(
+          err.response.data,
+          ToastAndroid.LONG,
+          ToastAndroid.TOP,
+        );
       });
   };
   const handleBackPress = () => {
